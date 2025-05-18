@@ -1,107 +1,265 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Checklist - Instaladores</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Marmoraria</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-
-  <!-- Login Screen -->
-  <div id="login-screen">
-    <div class="login-box">
-      <h2>Login</h2>
-      <p><small>E-mail: supervisor@example.com<br/>Senha: 123456</small></p>
-      <input type="email" id="login-email" value="supervisor@example.com" />
-      <input type="password" id="login-password" value="123456" />
-      <p class="error" id="login-error"></p>
-      <button onclick="handleLogin()" class="btn">Entrar</button>
+    <!-- Tela de Login -->
+    <div id="login-container" class="container">
+        <div class="card">
+            <h2>Login - Sistema de Gerenciamento</h2>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Seu email" value="flavio_cesar_oliveira@hotmail.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" placeholder="Sua senha" value="321">
+            </div>
+            <button id="login-btn" class="btn primary-btn">Entrar</button>
+            <p id="login-error" class="error-message"></p>
+        </div>
     </div>
-  </div>
 
-  <!-- App -->
-  <div id="app" style="display:none;">
-    <header>
-      <h1>Ferramental de Instaladores</h1>
-      <button onclick="signOutUser()" class="btn">Sair</button>
-    </header>
+    <!-- Conteúdo Principal (visível após login) -->
+    <div id="main-content" class="hidden">
+        <header>
+            <h1>Sistema de Gerenciamento de Marmoraria</h1>
+            <button id="logout-btn" class="btn">Sair</button>
+        </header>
 
-    <nav>
-      <button class="active" data-tab="checklist" onclick="switchTab(this)">Checklist</button>
-      <button data-tab="reports" onclick="switchTab(this)">Relatórios</button>
-      <button data-tab="technicians" onclick="switchTab(this)">Técnicos</button>
-    </nav>
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-page="maquinas">Máquinas</a></li>
+                <li><a href="#" class="nav-link" data-page="operacoes">Operações</a></li>
+                <li><a href="#" class="nav-link" data-page="pecas">Peças</a></li>
+                <li><a href="#" class="nav-link" data-page="manutencoes">Manutenções</a></li>
+                <li><a href="#" class="nav-link" data-page="alertas">Alertas</a></li>
+            </ul>
+        </nav>
 
-    <main>
-      <!-- Checklist Tab -->
-      <section id="tab-checklist" class="tab-content active">
-        <select id="tech-select" onchange="loadTools(this.value)"></select>
+        <main>
+            <!-- Dashboard -->
+            <section id="dashboard" class="page">
+                <h2>Dashboard</h2>
+                <div class="dashboard-cards">
+                    <div class="card summary-card">
+                        <h3>Máquinas</h3>
+                        <p class="count" id="maquinas-count">0</p>
+                    </div>
+                    <div class="card summary-card">
+                        <h3>Operações</h3>
+                        <p class="count" id="operacoes-count">0</p>
+                    </div>
+                    <div class="card summary-card">
+                        <h3>Peças</h3>
+                        <p class="count" id="pecas-count">0</p>
+                    </div>
+                    <div class="card summary-card">
+                        <h3>Manutenções</h3>
+                        <p class="count" id="manutencoes-count">0</p>
+                    </div>
+                    <div class="card summary-card alert-card">
+                        <h3>Alertas</h3>
+                        <p class="count" id="alertas-count">0</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Alertas Recentes</h3>
+                    <div id="alertas-recentes-list" class="list-container">
+                        <p class="empty-message">Nenhum alerta recente.</p>
+                    </div>
+                </div>
+            </section>
 
-        <div class="flex-gap">
-          <input type="text" id="new-tool-name" placeholder="Nova ferramenta" />
-          <button onclick="addTool()" class="btn">Adicionar</button>
-        </div>
+            <!-- Máquinas -->
+            <section id="maquinas" class="page hidden">
+                <h2>Gerenciamento de Máquinas</h2>
+                <div class="card">
+                    <h3>Adicionar Nova Máquina</h3>
+                    <div class="form-group">
+                        <label for="maquina-nome">Nome:</label>
+                        <input type="text" id="maquina-nome" placeholder="Nome da máquina">
+                    </div>
+                    <div class="form-group">
+                        <label for="maquina-modelo">Modelo:</label>
+                        <input type="text" id="maquina-modelo" placeholder="Modelo da máquina">
+                    </div>
+                    <div class="form-group">
+                        <label for="maquina-fabricante">Fabricante:</label>
+                        <input type="text" id="maquina-fabricante" placeholder="Fabricante">
+                    </div>
+                    <div class="form-group">
+                        <label for="maquina-data-aquisicao">Data de Aquisição:</label>
+                        <input type="date" id="maquina-data-aquisicao">
+                    </div>
+                    <div class="form-group">
+                        <label for="maquina-status">Status:</label>
+                        <select id="maquina-status">
+                            <option value="Ativa">Ativa</option>
+                            <option value="Em Manutenção">Em Manutenção</option>
+                            <option value="Inativa">Inativa</option>
+                        </select>
+                    </div>
+                    <button id="maquina-salvar" class="btn primary-btn">Salvar</button>
+                </div>
+                <div class="card">
+                    <h3>Máquinas Cadastradas</h3>
+                    <div id="maquinas-list" class="list-container">
+                        <p class="empty-message">Nenhuma máquina cadastrada.</p>
+                    </div>
+                </div>
+            </section>
 
-        <div id="tools-list"></div>
-      </section>
+            <!-- Operações -->
+            <section id="operacoes" class="page hidden">
+                <h2>Registro de Operações</h2>
+                <div class="card">
+                    <h3>Adicionar Nova Operação</h3>
+                    <div class="form-group">
+                        <label for="operacao-maquina">Máquina:</label>
+                        <select id="operacao-maquina">
+                            <option value="">Selecione uma máquina</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="operacao-tipo">Tipo de Operação:</label>
+                        <input type="text" id="operacao-tipo" placeholder="Tipo de operação">
+                    </div>
+                    <div class="form-group">
+                        <label for="operacao-data">Data:</label>
+                        <input type="date" id="operacao-data">
+                    </div>
+                    <div class="form-group">
+                        <label for="operacao-duracao">Duração (horas):</label>
+                        <input type="number" id="operacao-duracao" min="0" step="0.5" placeholder="Duração em horas">
+                    </div>
+                    <div class="form-group">
+                        <label for="operacao-operador">Operador:</label>
+                        <input type="text" id="operacao-operador" placeholder="Nome do operador">
+                    </div>
+                    <div class="form-group">
+                        <label for="operacao-observacoes">Observações:</label>
+                        <textarea id="operacao-observacoes" placeholder="Observações"></textarea>
+                    </div>
+                    <button id="operacao-salvar" class="btn primary-btn">Salvar</button>
+                </div>
+                <div class="card">
+                    <h3>Operações Registradas</h3>
+                    <div id="operacoes-list" class="list-container">
+                        <p class="empty-message">Nenhuma operação registrada.</p>
+                    </div>
+                </div>
+            </section>
 
-      <!-- Reports Tab -->
-      <section id="tab-reports" class="tab-content hidden">
-        <h2>Resumo Geral</h2>
-        <div class="report-summary">
-          <div class="summary-card">
-            <div class="summary-title">Total de Ferramentas</div>
-            <div class="summary-value" id="total-tools">0</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-title">Ferramentas OK</div>
-            <div class="summary-value tool-ok" id="total-ok">0</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-title">Ferramentas NOK</div>
-            <div class="summary-value tool-nok" id="total-nok">0</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-title">Próximos a Vencer</div>
-            <div class="summary-value tool-expiring" id="total-expiring">0</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-title">Vencidos</div>
-            <div class="summary-value tool-expired" id="total-expired">0</div>
-          </div>
-        </div>
+            <!-- Peças -->
+            <section id="pecas" class="page hidden">
+                <h2>Cadastro de Peças</h2>
+                <div class="card">
+                    <h3>Adicionar Nova Peça</h3>
+                    <div class="form-group">
+                        <label for="peca-nome">Nome:</label>
+                        <input type="text" id="peca-nome" placeholder="Nome da peça">
+                    </div>
+                    <div class="form-group">
+                        <label for="peca-codigo">Código:</label>
+                        <input type="text" id="peca-codigo" placeholder="Código da peça">
+                    </div>
+                    <div class="form-group">
+                        <label for="peca-maquina">Máquina Compatível:</label>
+                        <select id="peca-maquina">
+                            <option value="">Selecione uma máquina</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="peca-vida-util">Vida Útil (horas):</label>
+                        <input type="number" id="peca-vida-util" min="0" placeholder="Vida útil em horas">
+                    </div>
+                    <div class="form-group">
+                        <label for="peca-ultima-troca">Data da Última Troca:</label>
+                        <input type="date" id="peca-ultima-troca">
+                    </div>
+                    <div class="form-group">
+                        <label for="peca-estoque">Quantidade em Estoque:</label>
+                        <input type="number" id="peca-estoque" min="0" placeholder="Quantidade">
+                    </div>
+                    <button id="peca-salvar" class="btn primary-btn">Salvar</button>
+                </div>
+                <div class="card">
+                    <h3>Peças Cadastradas</h3>
+                    <div id="pecas-list" class="list-container">
+                        <p class="empty-message">Nenhuma peça cadastrada.</p>
+                    </div>
+                </div>
+            </section>
 
-        <h2 class="mt-6">Análise por Técnico</h2>
-        <table class="summary-table">
-          <thead>
-            <tr>      
-              <th>Técnico</th> 
-              <th>OK</th>
-              <th>NOK</th>
-              <th>Total</th>
-              <th>Vence em 7 dias</th>
-              <th>Vencido</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="report-table-body"></tbody>
-        </table>
-      </section>
+            <!-- Manutenções -->
+            <section id="manutencoes" class="page hidden">
+                <h2>Cadastro de Manutenções</h2>
+                <div class="card">
+                    <h3>Adicionar Nova Manutenção</h3>
+                    <div class="form-group">
+                        <label for="manutencao-maquina">Máquina:</label>
+                        <select id="manutencao-maquina">
+                            <option value="">Selecione uma máquina</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencao-tipo">Tipo:</label>
+                        <select id="manutencao-tipo">
+                            <option value="Preventiva">Preventiva</option>
+                            <option value="Corretiva">Corretiva</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencao-data">Data:</label>
+                        <input type="date" id="manutencao-data">
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencao-responsavel">Responsável:</label>
+                        <input type="text" id="manutencao-responsavel" placeholder="Nome do responsável">
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencao-descricao">Descrição:</label>
+                        <textarea id="manutencao-descricao" placeholder="Descrição da manutenção"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="manutencao-custo">Custo (R$):</label>
+                        <input type="number" id="manutencao-custo" min="0" step="0.01" placeholder="Custo em R$">
+                    </div>
+                    <button id="manutencao-salvar" class="btn primary-btn">Salvar</button>
+                </div>
+                <div class="card">
+                    <h3>Manutenções Registradas</h3>
+                    <div id="manutencoes-list" class="list-container">
+                        <p class="empty-message">Nenhuma manutenção registrada.</p>
+                    </div>
+                </div>
+            </section>
 
-      <!-- Technicians Tab -->
-      <section id="tab-technicians" class="tab-content hidden">
-        <h2>Gerenciar Técnicos</h2>
-        <div class="flex-gap">
-          <input type="text" id="new-tech-name" placeholder="Nome do técnico" />
-          <input type="text" id="new-tech-role" placeholder="Cargo" />
-          <button onclick="addTechnician()" class="btn">Adicionar</button>
-        </div>
-        <ul id="technicians-list"></ul>
-      </section>
-    </main>
-  </div>
+            <!-- Alertas -->
+            <section id="alertas" class="page hidden">
+                <h2>Alertas</h2>
+                <div class="card">
+                    <h3>Alertas Ativos</h3>
+                    <div id="alertas-list" class="list-container">
+                        <p class="empty-message">Nenhum alerta ativo.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
-  <script src="app.js"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
