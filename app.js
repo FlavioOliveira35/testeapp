@@ -179,10 +179,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.error("Erro ao atualizar máquina:", error);
-                    alert('Erro ao atualizar máquina. Tente novamente.');
+                    alert('Erro ao atualizar máquina1. Tente novamente.');
                 });
         } else {
             // Adicionar nova máquina
+            console.log('maquinadata:', maquinaData);
+        maquinasRef.add(maquinaData)
             maquinasRef.add(maquinaData)
                 .then(() => {
                     limparFormularioMaquina();
@@ -192,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.error("Erro ao adicionar máquina:", error);
-                    alert('Erro ao adicionar máquina. Tente novamente.');
+                    alert('Erro ao adicionar máquina2. Tente novamente.');
                 });
         }
     });

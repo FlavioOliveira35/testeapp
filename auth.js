@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Credenciais fixas
     const validEmail = 'flavio_cesar_oliveira@hotmail.com';
-    const validPassword = '321';
+    const validPassword = '123456';
 
     // Verificar se já está logado (usando localStorage)
     const checkLoginStatus = function() {
