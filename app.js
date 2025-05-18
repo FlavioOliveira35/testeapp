@@ -183,15 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         } else {
             // Adicionar nova máquina
-            console.log("dados enviados:",maquinaData);
-            console.log("dados enviados:",maquinasRef);
-            console.log("dados enviados:",error);
-        maquinasRef.add(maquinaData)
+         
+        
             maquinasRef.add(maquinaData)
                 .then(() => {
-                    limparFormularioMaquina();
-                    carregarMaquinas();
-                    atualizarDashboard();
+                    //limparFormularioMaquina();
+                   carregarMaquinas();
+                   /// atualizarDashboard();
                     alert('Máquina adicionada com sucesso!');
                 })
                 .catch(error => {
