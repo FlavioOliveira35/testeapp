@@ -25,7 +25,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // Coleções do Firestore
-const maquinasRef = db.collection("maquinas");
+const maquinasRef = db.collection('maquinas');
 const operacoesRef = db.collection('operacoes');
 const pecasRef = db.collection('pecas');
 const manutencoesRef = db.collection('manutencoes');
