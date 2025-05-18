@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
             carregarDados(); // Carregar dados após login
+            window.carregarDados = carregarDados
         } else {
             // Usuário não está logado
             loginContainer.classList.remove('hidden');
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
             carregarDados(); // Carregar dados após login
+            window.carregarDados = carregarDados
         } else {
             // Erro no login
             loginError.textContent = 'Email ou senha incorretos. Tente novamente.';
