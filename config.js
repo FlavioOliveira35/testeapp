@@ -1,4 +1,5 @@
   // Your web app's Firebase configuration
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>   
   const firebaseConfig = {
     apiKey: "AIzaSyAlFPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
     authDomain: "controle-4b27d.firebaseapp.com",
