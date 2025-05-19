@@ -81,8 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // CORREÇÃO: Tornar a função carregarDados global para que auth.js possa acessá-la
-    window.carregarDados = function() {
-        
+    window.carregarDados = function() {        
         carregarMaquinas();
         carregarOperacoes();
         carregarPecas();
@@ -95,8 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function carregarMaquinas() {
         
         maquinasRef.get().then((snapshot) => {
-            console.log("Resposta do Firebase para máquinas:", snapshot.size, "documentos");
-            if (snapshot.empty) {
+                if (snapshot.empty) {
                 maquinasList.innerHTML = '<p class="empty-message">Nenhuma máquina cadastrada.</p>';
                 return;
             }
