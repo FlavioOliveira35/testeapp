@@ -1,6 +1,7 @@
 
   // Import the functions you need from the SDKs you need
-
+  import { } from 'firebase/firestore';
+  import { } from 'firebase/auth';
   // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyAlFPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
@@ -26,4 +27,3 @@ const operacoesRef = db.collection('operacoes');
 const pecasRef = db.collection('pecas');
 const manutencoesRef = db.collection('manutencoes');
 const alertasRef = db.collection('alertas');
-window.carregarDados
