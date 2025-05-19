@@ -313,6 +313,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Salvar operação
     if (operacaoSalvar) {
+        const operacaoData = {
+            maquinaId,
+            tipo,
+            data,
+            duracao,
+            operador,
+            observacoes,
+            dataCadastro: new Date().toISOString()
+        };
+        
         operacaoSalvar.addEventListener('click', function() {
             const maquinaId = operacaoMaquina.value;
             const tipo = operacaoTipo.value.trim();
@@ -326,15 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const operacaoData = {
-                maquinaId,
-                tipo,
-                data,
-                duracao,
-                operador,
-                observacoes,
-                dataCadastro: new Date().toISOString()
-            };
+            
             
             if (editandoOperacaoId) {
                 // Atualizar operação existente
