@@ -259,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Operações
     function carregarOperacoes() {
+        console.log("Tentando carregar operações do Firebase...");
         operacoesRef.get().then((snapshot) => {
             if (!operacoesList) return;
             
@@ -581,6 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Manutenções
     function carregarManutencoes() {
+        console.log("Tentando carregar manutencao do Firebase...");
         manutencoesRef.get().then((snapshot) => {
             if (!manutencoesList) return;
             

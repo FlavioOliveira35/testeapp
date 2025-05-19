@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+
+    
     // Verificar estado de autenticação ao carregar a página
     checkLoginStatus();
 
