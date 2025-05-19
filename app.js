@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // CORREÇÃO: Tornar a função carregarDados global para que auth.js possa acessá-la
     window.carregarDados = function() {
-        console.log("Carregando dados do Firebase...");
+        
         carregarMaquinas();
         carregarOperacoes();
         carregarPecas();
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Máquinas
     function carregarMaquinas() {
-        console.log("Tentando carregar máquinas do Firebase...");
+        
         maquinasRef.get().then((snapshot) => {
             console.log("Resposta do Firebase para máquinas:", snapshot.size, "documentos");
             if (snapshot.empty) {
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Atualizar máquina existente
                 maquinasRef.doc(editandoMaquinaId).update(maquinaData)
                     .then(() => {
-                        console.log("Máquina atualizada com sucesso!");
+                        
                         limparFormularioMaquina();
                         carregarMaquinas();
                         atualizarDashboard();
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Adicionar nova máquina
                 maquinasRef.add(maquinaData)
                     .then(() => {
-                        console.log("Máquina adicionada com sucesso!");
+                        
                         limparFormularioMaquina();
                         carregarMaquinas();
                         atualizarDashboard();
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Operações
     function carregarOperacoes() {
-        console.log("Tentando carregar operações do Firebase...");
+        
         operacoesRef.get().then((snapshot) => {
             if (!operacoesList) return;
             
