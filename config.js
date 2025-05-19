@@ -1,8 +1,5 @@
 
   // Import the functions you need from the SDKs you need
-  
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -24,7 +21,9 @@ const db = firebase.firestore();
 
 // Referências para as coleções
 const maquinasRef = db.collection('maquinas');
+console.log(maquinasRef);
 const operacoesRef = db.collection('operacoes');
 const pecasRef = db.collection('pecas');
 const manutencoesRef = db.collection('manutencoes');
 const alertasRef = db.collection('alertas');
+window.carregarDados
