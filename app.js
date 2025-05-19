@@ -81,7 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // CORREÇÃO: Tornar a função carregarDados global para que auth.js possa acessá-la
-    window.carregarDados = function() {        
+    window.carregarDados = function() {
+        console.log("Carregando dados do Firebase...");
         carregarMaquinas();
         carregarOperacoes();
         carregarPecas();
@@ -92,9 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Máquinas
     function carregarMaquinas() {
-        
+        console.log("Tentando carregar máquinas do Firebase...");
         maquinasRef.get().then((snapshot) => {
-                if (snapshot.empty) {
+            console.log("Resposta do Firebase para máquinas:", snapshot.size, "documentos");
+            if (snapshot.empty) {
                 maquinasList.innerHTML = '<p class="empty-message">Nenhuma máquina cadastrada.</p>';
                 return;
             }
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Atualizar máquina existente
                 maquinasRef.doc(editandoMaquinaId).update(maquinaData)
                     .then(() => {
-                        
+                        console.log("Máquina atualizada com sucesso!");
                         limparFormularioMaquina();
                         carregarMaquinas();
                         atualizarDashboard();
@@ -191,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Adicionar nova máquina
                 maquinasRef.add(maquinaData)
                     .then(() => {
-                        
+                        console.log("Máquina adicionada com sucesso!");
                         limparFormularioMaquina();
                         carregarMaquinas();
                         atualizarDashboard();
@@ -257,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Operações
     function carregarOperacoes() {
-        
         operacoesRef.get().then((snapshot) => {
             if (!operacoesList) return;
             
@@ -310,9 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Salvar operação
- 
-    if (operacaoSalvar) {     
-
+    if (operacaoSalvar) {
         operacaoSalvar.addEventListener('click', function() {
             const maquinaId = operacaoMaquina.value;
             const tipo = operacaoTipo.value.trim();
@@ -335,7 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 observacoes,
                 dataCadastro: new Date().toISOString()
             };
-            
             
             if (editandoOperacaoId) {
                 // Atualizar operação existente
@@ -583,7 +581,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Manutenções
     function carregarManutencoes() {
-        console.log("Tentando carregar manutencao do Firebase...");
         manutencoesRef.get().then((snapshot) => {
             if (!manutencoesList) return;
             
