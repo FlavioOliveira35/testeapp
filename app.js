@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Salvar operação
  
-    if (operacaoSalvar) {      
+    if (operacaoSalvar) {     
 
         operacaoSalvar.addEventListener('click', function() {
             const maquinaId = operacaoMaquina.value;
