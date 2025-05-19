@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Credenciais fixas
     const validEmail = 'flavio_cesar_oliveira@hotmail.com';
-    const validPassword = '123456';
+    const validPassword = '321';
 
     // Verificar se já está logado (usando localStorage)
     const checkLoginStatus = function() {
@@ -20,8 +20,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Usuário está logado
             loginContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
-            carregarDados(); // Carregar dados após login
-            window.carregarDados = carregarDados
+            
+            // CORREÇÃO: Garantir que carregarDados seja chamada após login
+            if (typeof window.carregarDados === 'function') {
+                window.carregarDados();
+            } else {
+                console.error('Função carregarDados não encontrada. Verifique se app.js está carregado corretamente.');
+            }
         } else {
             // Usuário não está logado
             loginContainer.classList.remove('hidden');
@@ -50,8 +55,13 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('isLoggedIn', 'true');
             loginContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
-            carregarDados(); // Carregar dados após login
-            window.carregarDados = carregarDados
+            
+            // CORREÇÃO: Chamar carregarDados explicitamente após login bem-sucedido
+            if (typeof window.carregarDados === 'function') {
+                window.carregarDados();
+            } else {
+                console.error('Função carregarDados não encontrada. Verifique se app.js está carregado corretamente.');
+            }
         } else {
             // Erro no login
             loginError.textContent = 'Email ou senha incorretos. Tente novamente.';

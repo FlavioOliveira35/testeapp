@@ -80,19 +80,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Função para carregar todos os dados
-    function carregarDados() {
+    // CORREÇÃO: Tornar a função carregarDados global para que auth.js possa acessá-la
+    window.carregarDados = function() {
+        console.log("Carregando dados do Firebase...");
         carregarMaquinas();
         carregarOperacoes();
         carregarPecas();
         carregarManutencoes();
         carregarAlertas();
         atualizarDashboard();
-    }
+    };
     
     // Funções para Máquinas
     function carregarMaquinas() {
+        console.log("Tentando carregar máquinas do Firebase...");
         maquinasRef.get().then((snapshot) => {
+            console.log("Resposta do Firebase para máquinas:", snapshot.size, "documentos");
             if (snapshot.empty) {
                 maquinasList.innerHTML = '<p class="empty-message">Nenhuma máquina cadastrada.</p>';
                 return;
@@ -122,14 +125,15 @@ document.addEventListener('DOMContentLoaded', function() {
             atualizarSelectsMaquinas();
         }).catch(error => {
             console.error("Erro ao carregar máquinas:", error);
+            maquinasList.innerHTML = '<p class="empty-message">Erro ao carregar máquinas. Verifique o console para mais detalhes.</p>';
         });
     }
     
     function atualizarSelectsMaquinas() {
         // Limpar selects
-        operacaoMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
-        pecaMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
-        manutencaoMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
+        if (operacaoMaquina) operacaoMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
+        if (pecaMaquina) pecaMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
+        if (manutencaoMaquina) manutencaoMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
         
         // Preencher com máquinas cadastradas
         maquinasRef.get().then((snapshot) => {
@@ -137,9 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const maquina = doc.data();
                 const option = `<option value="${doc.id}">${maquina.nome}</option>`;
                 
-                operacaoMaquina.innerHTML += option;
-                pecaMaquina.innerHTML += option;
-                manutencaoMaquina.innerHTML += option;
+                if (operacaoMaquina) operacaoMaquina.innerHTML += option;
+                if (pecaMaquina) pecaMaquina.innerHTML += option;
+                if (manutencaoMaquina) manutencaoMaquina.innerHTML += option;
             });
         }).catch(error => {
             console.error("Erro ao atualizar selects de máquinas:", error);
@@ -147,66 +151,70 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Salvar máquina
-    maquinaSalvar.addEventListener('click', function() {
-        const nome = maquinaNome.value.trim();
-        const modelo = maquinaModelo.value.trim();
-        const fabricante = maquinaFabricante.value.trim();
-        const dataAquisicao = maquinaDataAquisicao.value;
-        const status = maquinaStatus.value;
-        
-        if (!nome || !modelo || !fabricante || !dataAquisicao) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
-            return;
-        }
-        
-        const maquinaData = {
-            nome,
-            modelo,
-            fabricante,
-            dataAquisicao,
-            status,
-            dataCadastro: new Date()
-        };
-        
-        if (editandoMaquinaId) {
-            // Atualizar máquina existente
-            maquinasRef.doc(editandoMaquinaId).update(maquinaData)
-                .then(() => {
-                    limparFormularioMaquina();
-                    carregarMaquinas();
-                    atualizarDashboard();
-                    alert('Máquina atualizada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao atualizar máquina:", error);
-                    alert('Erro ao atualizar máquina1. Tente novamente.');
-                });
-        } else {
-            // Adicionar nova máquina
-         
-        
-            maquinasRef.add(maquinaData)
-                .then(() => {
-                    //limparFormularioMaquina();
-                   carregarMaquinas();
-                   /// atualizarDashboard();
-                    alert('Máquina adicionada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao adicionar máquina:", error);
-                    alert('Erro ao adicionar máquina2. Tente novamente.');
-                });
-        }
-    });
+    if (maquinaSalvar) {
+        maquinaSalvar.addEventListener('click', function() {
+            const nome = maquinaNome.value.trim();
+            const modelo = maquinaModelo.value.trim();
+            const fabricante = maquinaFabricante.value.trim();
+            const dataAquisicao = maquinaDataAquisicao.value;
+            const status = maquinaStatus.value;
+            
+            if (!nome || !modelo || !fabricante || !dataAquisicao) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            const maquinaData = {
+                nome,
+                modelo,
+                fabricante,
+                dataAquisicao,
+                status,
+                dataCadastro: new Date().toISOString()
+            };
+            
+            console.log("Tentando salvar máquina:", maquinaData);
+            
+            if (editandoMaquinaId) {
+                // Atualizar máquina existente
+                maquinasRef.doc(editandoMaquinaId).update(maquinaData)
+                    .then(() => {
+                        console.log("Máquina atualizada com sucesso!");
+                        limparFormularioMaquina();
+                        carregarMaquinas();
+                        atualizarDashboard();
+                        alert('Máquina atualizada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao atualizar máquina:", error);
+                        alert('Erro ao atualizar máquina. Tente novamente. Erro: ' + error.message);
+                    });
+            } else {
+                // Adicionar nova máquina
+                maquinasRef.add(maquinaData)
+                    .then(() => {
+                        console.log("Máquina adicionada com sucesso!");
+                        limparFormularioMaquina();
+                        carregarMaquinas();
+                        atualizarDashboard();
+                        alert('Máquina adicionada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao adicionar máquina:", error);
+                        alert('Erro ao adicionar máquina. Tente novamente. Erro: ' + error.message);
+                    });
+            }
+        });
+    }
     
     function limparFormularioMaquina() {
-        maquinaNome.value = '';
-        maquinaModelo.value = '';
-        maquinaFabricante.value = '';
-        maquinaDataAquisicao.value = '';
-        maquinaStatus.value = 'Ativa';
+        if (maquinaNome) maquinaNome.value = '';
+        if (maquinaModelo) maquinaModelo.value = '';
+        if (maquinaFabricante) maquinaFabricante.value = '';
+        if (maquinaDataAquisicao) maquinaDataAquisicao.value = '';
+        if (maquinaStatus) maquinaStatus.value = 'Ativa';
         editandoMaquinaId = null;
-        maquinaSalvar.textContent = 'Salvar';
+        if (maquinaSalvar) maquinaSalvar.textContent = 'Salvar';
     }
     
     // Funções para editar e excluir máquina
@@ -214,17 +222,20 @@ document.addEventListener('DOMContentLoaded', function() {
         maquinasRef.doc(id).get().then(doc => {
             if (doc.exists) {
                 const maquina = doc.data();
-                maquinaNome.value = maquina.nome;
-                maquinaModelo.value = maquina.modelo;
-                maquinaFabricante.value = maquina.fabricante;
-                maquinaDataAquisicao.value = maquina.dataAquisicao;
-                maquinaStatus.value = maquina.status;
+                if (maquinaNome) maquinaNome.value = maquina.nome;
+                if (maquinaModelo) maquinaModelo.value = maquina.modelo;
+                if (maquinaFabricante) maquinaFabricante.value = maquina.fabricante;
+                if (maquinaDataAquisicao) maquinaDataAquisicao.value = maquina.dataAquisicao;
+                if (maquinaStatus) maquinaStatus.value = maquina.status;
                 
                 editandoMaquinaId = id;
-                maquinaSalvar.textContent = 'Atualizar';
+                if (maquinaSalvar) maquinaSalvar.textContent = 'Atualizar';
                 
                 // Rolar para o formulário
-                document.querySelector('#maquinas h3').scrollIntoView({ behavior: 'smooth' });
+                const formularioHeading = document.querySelector('#maquinas h3');
+                if (formularioHeading) {
+                    formularioHeading.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         }).catch(error => {
             console.error("Erro ao carregar máquina para edição:", error);
@@ -249,6 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funções para Operações
     function carregarOperacoes() {
         operacoesRef.get().then((snapshot) => {
+            if (!operacoesList) return;
+            
             if (snapshot.empty) {
                 operacoesList.innerHTML = '<p class="empty-message">Nenhuma operação registrada.</p>';
                 return;
@@ -291,71 +304,76 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }).catch(error => {
             console.error("Erro ao carregar operações:", error);
+            if (operacoesList) {
+                operacoesList.innerHTML = '<p class="empty-message">Erro ao carregar operações. Verifique o console para mais detalhes.</p>';
+            }
         });
     }
     
     // Salvar operação
-    operacaoSalvar.addEventListener('click', function() {
-        const maquinaId = operacaoMaquina.value;
-        const tipo = operacaoTipo.value.trim();
-        const data = operacaoData.value;
-        const duracao = operacaoDuracao.value;
-        const operador = operacaoOperador.value.trim();
-        const observacoes = operacaoObservacoes.value.trim();
-        
-        if (!maquinaId || !tipo || !data || !duracao || !operador) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
-            return;
-        }
-        
-        const operacaoData = {
-            maquinaId,
-            tipo,
-            data,
-            duracao,
-            operador,
-            observacoes,
-            dataCadastro: new Date()
-        };
-        
-        if (editandoOperacaoId) {
-            // Atualizar operação existente
-            operacoesRef.doc(editandoOperacaoId).update(operacaoData)
-                .then(() => {
-                    limparFormularioOperacao();
-                    carregarOperacoes();
-                    atualizarDashboard();
-                    alert('Operação atualizada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao atualizar operação:", error);
-                    alert('Erro ao atualizar operação. Tente novamente.');
-                });
-        } else {
-            // Adicionar nova operação
-            operacoesRef.add(operacaoData)
-                .then(() => {
-                    limparFormularioOperacao();
-                    carregarOperacoes();
-                    atualizarDashboard();
-                    alert('Operação adicionada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao adicionar operação:", error);
-                    alert('Erro ao adicionar operação. Tente novamente.');
-                });
-        }
-    });
+    if (operacaoSalvar) {
+        operacaoSalvar.addEventListener('click', function() {
+            const maquinaId = operacaoMaquina.value;
+            const tipo = operacaoTipo.value.trim();
+            const data = operacaoData.value;
+            const duracao = operacaoDuracao.value;
+            const operador = operacaoOperador.value.trim();
+            const observacoes = operacaoObservacoes.value.trim();
+            
+            if (!maquinaId || !tipo || !data || !duracao || !operador) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            const operacaoData = {
+                maquinaId,
+                tipo,
+                data,
+                duracao,
+                operador,
+                observacoes,
+                dataCadastro: new Date().toISOString()
+            };
+            
+            if (editandoOperacaoId) {
+                // Atualizar operação existente
+                operacoesRef.doc(editandoOperacaoId).update(operacaoData)
+                    .then(() => {
+                        limparFormularioOperacao();
+                        carregarOperacoes();
+                        atualizarDashboard();
+                        alert('Operação atualizada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao atualizar operação:", error);
+                        alert('Erro ao atualizar operação. Tente novamente.');
+                    });
+            } else {
+                // Adicionar nova operação
+                operacoesRef.add(operacaoData)
+                    .then(() => {
+                        limparFormularioOperacao();
+                        carregarOperacoes();
+                        atualizarDashboard();
+                        alert('Operação adicionada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao adicionar operação:", error);
+                        alert('Erro ao adicionar operação. Tente novamente.');
+                    });
+            }
+        });
+    }
     
     function limparFormularioOperacao() {
-        operacaoMaquina.value = '';
-        operacaoTipo.value = '';
-        operacaoData.value = '';
-        operacaoDuracao.value = '';
-        operacaoOperador.value = '';
-        operacaoObservacoes.value = '';
+        if (operacaoMaquina) operacaoMaquina.value = '';
+        if (operacaoTipo) operacaoTipo.value = '';
+        if (operacaoData) operacaoData.value = '';
+        if (operacaoDuracao) operacaoDuracao.value = '';
+        if (operacaoOperador) operacaoOperador.value = '';
+        if (operacaoObservacoes) operacaoObservacoes.value = '';
         editandoOperacaoId = null;
-        operacaoSalvar.textContent = 'Salvar';
+        if (operacaoSalvar) operacaoSalvar.textContent = 'Salvar';
     }
     
     // Funções para editar e excluir operação
@@ -363,18 +381,21 @@ document.addEventListener('DOMContentLoaded', function() {
         operacoesRef.doc(id).get().then(doc => {
             if (doc.exists) {
                 const operacao = doc.data();
-                operacaoMaquina.value = operacao.maquinaId;
-                operacaoTipo.value = operacao.tipo;
-                operacaoData.value = operacao.data;
-                operacaoDuracao.value = operacao.duracao;
-                operacaoOperador.value = operacao.operador;
-                operacaoObservacoes.value = operacao.observacoes || '';
+                if (operacaoMaquina) operacaoMaquina.value = operacao.maquinaId;
+                if (operacaoTipo) operacaoTipo.value = operacao.tipo;
+                if (operacaoData) operacaoData.value = operacao.data;
+                if (operacaoDuracao) operacaoDuracao.value = operacao.duracao;
+                if (operacaoOperador) operacaoOperador.value = operacao.operador;
+                if (operacaoObservacoes) operacaoObservacoes.value = operacao.observacoes || '';
                 
                 editandoOperacaoId = id;
-                operacaoSalvar.textContent = 'Atualizar';
+                if (operacaoSalvar) operacaoSalvar.textContent = 'Atualizar';
                 
                 // Rolar para o formulário
-                document.querySelector('#operacoes h3').scrollIntoView({ behavior: 'smooth' });
+                const formularioHeading = document.querySelector('#operacoes h3');
+                if (formularioHeading) {
+                    formularioHeading.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         }).catch(error => {
             console.error("Erro ao carregar operação para edição:", error);
@@ -399,6 +420,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funções para Peças
     function carregarPecas() {
         pecasRef.get().then((snapshot) => {
+            if (!pecasList) return;
+            
             if (snapshot.empty) {
                 pecasList.innerHTML = '<p class="empty-message">Nenhuma peça cadastrada.</p>';
                 return;
@@ -443,71 +466,76 @@ document.addEventListener('DOMContentLoaded', function() {
             verificarAlertasPecas();
         }).catch(error => {
             console.error("Erro ao carregar peças:", error);
+            if (pecasList) {
+                pecasList.innerHTML = '<p class="empty-message">Erro ao carregar peças. Verifique o console para mais detalhes.</p>';
+            }
         });
     }
     
     // Salvar peça
-    pecaSalvar.addEventListener('click', function() {
-        const nome = pecaNome.value.trim();
-        const codigo = pecaCodigo.value.trim();
-        const maquinaId = pecaMaquina.value;
-        const vidaUtil = pecaVidaUtil.value;
-        const ultimaTroca = pecaUltimaTroca.value;
-        const estoque = pecaEstoque.value;
-        
-        if (!nome || !codigo || !maquinaId || !vidaUtil || !ultimaTroca || !estoque) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
-            return;
-        }
-        
-        const pecaData = {
-            nome,
-            codigo,
-            maquinaId,
-            vidaUtil,
-            ultimaTroca,
-            estoque,
-            dataCadastro: new Date()
-        };
-        
-        if (editandoPecaId) {
-            // Atualizar peça existente
-            pecasRef.doc(editandoPecaId).update(pecaData)
-                .then(() => {
-                    limparFormularioPeca();
-                    carregarPecas();
-                    atualizarDashboard();
-                    alert('Peça atualizada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao atualizar peça:", error);
-                    alert('Erro ao atualizar peça. Tente novamente.');
-                });
-        } else {
-            // Adicionar nova peça
-            pecasRef.add(pecaData)
-                .then(() => {
-                    limparFormularioPeca();
-                    carregarPecas();
-                    atualizarDashboard();
-                    alert('Peça adicionada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao adicionar peça:", error);
-                    alert('Erro ao adicionar peça. Tente novamente.');
-                });
-        }
-    });
+    if (pecaSalvar) {
+        pecaSalvar.addEventListener('click', function() {
+            const nome = pecaNome.value.trim();
+            const codigo = pecaCodigo.value.trim();
+            const maquinaId = pecaMaquina.value;
+            const vidaUtil = pecaVidaUtil.value;
+            const ultimaTroca = pecaUltimaTroca.value;
+            const estoque = pecaEstoque.value;
+            
+            if (!nome || !codigo || !maquinaId || !vidaUtil || !ultimaTroca || !estoque) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            const pecaData = {
+                nome,
+                codigo,
+                maquinaId,
+                vidaUtil,
+                ultimaTroca,
+                estoque,
+                dataCadastro: new Date().toISOString()
+            };
+            
+            if (editandoPecaId) {
+                // Atualizar peça existente
+                pecasRef.doc(editandoPecaId).update(pecaData)
+                    .then(() => {
+                        limparFormularioPeca();
+                        carregarPecas();
+                        atualizarDashboard();
+                        alert('Peça atualizada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao atualizar peça:", error);
+                        alert('Erro ao atualizar peça. Tente novamente.');
+                    });
+            } else {
+                // Adicionar nova peça
+                pecasRef.add(pecaData)
+                    .then(() => {
+                        limparFormularioPeca();
+                        carregarPecas();
+                        atualizarDashboard();
+                        alert('Peça adicionada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao adicionar peça:", error);
+                        alert('Erro ao adicionar peça. Tente novamente.');
+                    });
+            }
+        });
+    }
     
     function limparFormularioPeca() {
-        pecaNome.value = '';
-        pecaCodigo.value = '';
-        pecaMaquina.value = '';
-        pecaVidaUtil.value = '';
-        pecaUltimaTroca.value = '';
-        pecaEstoque.value = '';
+        if (pecaNome) pecaNome.value = '';
+        if (pecaCodigo) pecaCodigo.value = '';
+        if (pecaMaquina) pecaMaquina.value = '';
+        if (pecaVidaUtil) pecaVidaUtil.value = '';
+        if (pecaUltimaTroca) pecaUltimaTroca.value = '';
+        if (pecaEstoque) pecaEstoque.value = '';
         editandoPecaId = null;
-        pecaSalvar.textContent = 'Salvar';
+        if (pecaSalvar) pecaSalvar.textContent = 'Salvar';
     }
     
     // Funções para editar e excluir peça
@@ -515,18 +543,21 @@ document.addEventListener('DOMContentLoaded', function() {
         pecasRef.doc(id).get().then(doc => {
             if (doc.exists) {
                 const peca = doc.data();
-                pecaNome.value = peca.nome;
-                pecaCodigo.value = peca.codigo;
-                pecaMaquina.value = peca.maquinaId;
-                pecaVidaUtil.value = peca.vidaUtil;
-                pecaUltimaTroca.value = peca.ultimaTroca;
-                pecaEstoque.value = peca.estoque;
+                if (pecaNome) pecaNome.value = peca.nome;
+                if (pecaCodigo) pecaCodigo.value = peca.codigo;
+                if (pecaMaquina) pecaMaquina.value = peca.maquinaId;
+                if (pecaVidaUtil) pecaVidaUtil.value = peca.vidaUtil;
+                if (pecaUltimaTroca) pecaUltimaTroca.value = peca.ultimaTroca;
+                if (pecaEstoque) pecaEstoque.value = peca.estoque;
                 
                 editandoPecaId = id;
-                pecaSalvar.textContent = 'Atualizar';
+                if (pecaSalvar) pecaSalvar.textContent = 'Atualizar';
                 
                 // Rolar para o formulário
-                document.querySelector('#pecas h3').scrollIntoView({ behavior: 'smooth' });
+                const formularioHeading = document.querySelector('#pecas h3');
+                if (formularioHeading) {
+                    formularioHeading.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         }).catch(error => {
             console.error("Erro ao carregar peça para edição:", error);
@@ -551,6 +582,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funções para Manutenções
     function carregarManutencoes() {
         manutencoesRef.get().then((snapshot) => {
+            if (!manutencoesList) return;
+            
             if (snapshot.empty) {
                 manutencoesList.innerHTML = '<p class="empty-message">Nenhuma manutenção registrada.</p>';
                 return;
@@ -596,71 +629,76 @@ document.addEventListener('DOMContentLoaded', function() {
             verificarAlertasManutencoes();
         }).catch(error => {
             console.error("Erro ao carregar manutenções:", error);
+            if (manutencoesList) {
+                manutencoesList.innerHTML = '<p class="empty-message">Erro ao carregar manutenções. Verifique o console para mais detalhes.</p>';
+            }
         });
     }
     
     // Salvar manutenção
-    manutencaoSalvar.addEventListener('click', function() {
-        const maquinaId = manutencaoMaquina.value;
-        const tipo = manutencaoTipo.value;
-        const data = manutencaoData.value;
-        const responsavel = manutencaoResponsavel.value.trim();
-        const descricao = manutencaoDescricao.value.trim();
-        const custo = manutencaoCusto.value;
-        
-        if (!maquinaId || !tipo || !data || !responsavel || !custo) {
-            alert('Por favor, preencha todos os campos obrigatórios.');
-            return;
-        }
-        
-        const manutencaoData = {
-            maquinaId,
-            tipo,
-            data,
-            responsavel,
-            descricao,
-            custo,
-            dataCadastro: new Date()
-        };
-        
-        if (editandoManutencaoId) {
-            // Atualizar manutenção existente
-            manutencoesRef.doc(editandoManutencaoId).update(manutencaoData)
-                .then(() => {
-                    limparFormularioManutencao();
-                    carregarManutencoes();
-                    atualizarDashboard();
-                    alert('Manutenção atualizada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao atualizar manutenção:", error);
-                    alert('Erro ao atualizar manutenção. Tente novamente.');
-                });
-        } else {
-            // Adicionar nova manutenção
-            manutencoesRef.add(manutencaoData)
-                .then(() => {
-                    limparFormularioManutencao();
-                    carregarManutencoes();
-                    atualizarDashboard();
-                    alert('Manutenção adicionada com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao adicionar manutenção:", error);
-                    alert('Erro ao adicionar manutenção. Tente novamente.');
-                });
-        }
-    });
+    if (manutencaoSalvar) {
+        manutencaoSalvar.addEventListener('click', function() {
+            const maquinaId = manutencaoMaquina.value;
+            const tipo = manutencaoTipo.value;
+            const data = manutencaoData.value;
+            const responsavel = manutencaoResponsavel.value.trim();
+            const descricao = manutencaoDescricao.value.trim();
+            const custo = manutencaoCusto.value;
+            
+            if (!maquinaId || !tipo || !data || !responsavel || !custo) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            const manutencaoData = {
+                maquinaId,
+                tipo,
+                data,
+                responsavel,
+                descricao,
+                custo,
+                dataCadastro: new Date().toISOString()
+            };
+            
+            if (editandoManutencaoId) {
+                // Atualizar manutenção existente
+                manutencoesRef.doc(editandoManutencaoId).update(manutencaoData)
+                    .then(() => {
+                        limparFormularioManutencao();
+                        carregarManutencoes();
+                        atualizarDashboard();
+                        alert('Manutenção atualizada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao atualizar manutenção:", error);
+                        alert('Erro ao atualizar manutenção. Tente novamente.');
+                    });
+            } else {
+                // Adicionar nova manutenção
+                manutencoesRef.add(manutencaoData)
+                    .then(() => {
+                        limparFormularioManutencao();
+                        carregarManutencoes();
+                        atualizarDashboard();
+                        alert('Manutenção adicionada com sucesso!');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao adicionar manutenção:", error);
+                        alert('Erro ao adicionar manutenção. Tente novamente.');
+                    });
+            }
+        });
+    }
     
     function limparFormularioManutencao() {
-        manutencaoMaquina.value = '';
-        manutencaoTipo.value = 'Preventiva';
-        manutencaoData.value = '';
-        manutencaoResponsavel.value = '';
-        manutencaoDescricao.value = '';
-        manutencaoCusto.value = '';
+        if (manutencaoMaquina) manutencaoMaquina.value = '';
+        if (manutencaoTipo) manutencaoTipo.value = 'Preventiva';
+        if (manutencaoData) manutencaoData.value = '';
+        if (manutencaoResponsavel) manutencaoResponsavel.value = '';
+        if (manutencaoDescricao) manutencaoDescricao.value = '';
+        if (manutencaoCusto) manutencaoCusto.value = '';
         editandoManutencaoId = null;
-        manutencaoSalvar.textContent = 'Salvar';
+        if (manutencaoSalvar) manutencaoSalvar.textContent = 'Salvar';
     }
     
     // Funções para editar e excluir manutenção
@@ -668,18 +706,21 @@ document.addEventListener('DOMContentLoaded', function() {
         manutencoesRef.doc(id).get().then(doc => {
             if (doc.exists) {
                 const manutencao = doc.data();
-                manutencaoMaquina.value = manutencao.maquinaId;
-                manutencaoTipo.value = manutencao.tipo;
-                manutencaoData.value = manutencao.data;
-                manutencaoResponsavel.value = manutencao.responsavel;
-                manutencaoDescricao.value = manutencao.descricao || '';
-                manutencaoCusto.value = manutencao.custo;
+                if (manutencaoMaquina) manutencaoMaquina.value = manutencao.maquinaId;
+                if (manutencaoTipo) manutencaoTipo.value = manutencao.tipo;
+                if (manutencaoData) manutencaoData.value = manutencao.data;
+                if (manutencaoResponsavel) manutencaoResponsavel.value = manutencao.responsavel;
+                if (manutencaoDescricao) manutencaoDescricao.value = manutencao.descricao || '';
+                if (manutencaoCusto) manutencaoCusto.value = manutencao.custo;
                 
                 editandoManutencaoId = id;
-                manutencaoSalvar.textContent = 'Atualizar';
+                if (manutencaoSalvar) manutencaoSalvar.textContent = 'Atualizar';
                 
                 // Rolar para o formulário
-                document.querySelector('#manutencoes h3').scrollIntoView({ behavior: 'smooth' });
+                const formularioHeading = document.querySelector('#manutencoes h3');
+                if (formularioHeading) {
+                    formularioHeading.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         }).catch(error => {
             console.error("Erro ao carregar manutenção para edição:", error);
@@ -704,6 +745,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funções para Alertas
     function carregarAlertas() {
         alertasRef.get().then((snapshot) => {
+            if (!alertasList || !alertasRecentesList) return;
+            
             if (snapshot.empty) {
                 alertasList.innerHTML = '<p class="empty-message">Nenhum alerta ativo.</p>';
                 alertasRecentesList.innerHTML = '<p class="empty-message">Nenhum alerta recente.</p>';
@@ -741,6 +784,12 @@ document.addEventListener('DOMContentLoaded', function() {
             alertasRecentesList.innerHTML = htmlRecentes || '<p class="empty-message">Nenhum alerta recente.</p>';
         }).catch(error => {
             console.error("Erro ao carregar alertas:", error);
+            if (alertasList) {
+                alertasList.innerHTML = '<p class="empty-message">Erro ao carregar alertas. Verifique o console para mais detalhes.</p>';
+            }
+            if (alertasRecentesList) {
+                alertasRecentesList.innerHTML = '<p class="empty-message">Erro ao carregar alertas. Verifique o console para mais detalhes.</p>';
+            }
         });
     }
     
@@ -793,8 +842,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }).then(() => {
                                     carregarAlertas();
                                     atualizarDashboard();
+                                }).catch(error => {
+                                    console.error("Erro ao criar alerta de peça:", error);
                                 });
                             }
+                        }).catch(error => {
+                            console.error("Erro ao verificar alertas existentes:", error);
                         });
                 }
                 
@@ -817,11 +870,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }).then(() => {
                                     carregarAlertas();
                                     atualizarDashboard();
+                                }).catch(error => {
+                                    console.error("Erro ao criar alerta de estoque:", error);
                                 });
                             }
+                        }).catch(error => {
+                            console.error("Erro ao verificar alertas de estoque existentes:", error);
                         });
                 }
             });
+        }).catch(error => {
+            console.error("Erro ao verificar peças para alertas:", error);
         });
     }
     
@@ -868,8 +927,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                             }).then(() => {
                                                 carregarAlertas();
                                                 atualizarDashboard();
+                                            }).catch(error => {
+                                                console.error("Erro ao criar alerta de manutenção:", error);
                                             });
                                         }
+                                    }).catch(error => {
+                                        console.error("Erro ao verificar alertas de manutenção existentes:", error);
                                     });
                             }
                         } else {
@@ -890,12 +953,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                         }).then(() => {
                                             carregarAlertas();
                                             atualizarDashboard();
+                                        }).catch(error => {
+                                            console.error("Erro ao criar alerta de primeira manutenção:", error);
                                         });
                                     }
+                                }).catch(error => {
+                                    console.error("Erro ao verificar alertas de primeira manutenção:", error);
                                 });
                         }
+                    }).catch(error => {
+                        console.error("Erro ao verificar última manutenção:", error);
                     });
             });
+        }).catch(error => {
+            console.error("Erro ao verificar máquinas para alertas de manutenção:", error);
         });
     }
     
@@ -907,29 +978,46 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Atualizar contadores do dashboard
     function atualizarDashboard() {
+        console.log("Atualizando dashboard...");
+        
         // Contar máquinas
         maquinasRef.get().then((snapshot) => {
-            maquinasCount.textContent = snapshot.size;
+            if (maquinasCount) maquinasCount.textContent = snapshot.size;
+        }).catch(error => {
+            console.error("Erro ao contar máquinas:", error);
+            if (maquinasCount) maquinasCount.textContent = "Erro";
         });
         
         // Contar operações
         operacoesRef.get().then((snapshot) => {
-            operacoesCount.textContent = snapshot.size;
+            if (operacoesCount) operacoesCount.textContent = snapshot.size;
+        }).catch(error => {
+            console.error("Erro ao contar operações:", error);
+            if (operacoesCount) operacoesCount.textContent = "Erro";
         });
         
         // Contar peças
         pecasRef.get().then((snapshot) => {
-            pecasCount.textContent = snapshot.size;
+            if (pecasCount) pecasCount.textContent = snapshot.size;
+        }).catch(error => {
+            console.error("Erro ao contar peças:", error);
+            if (pecasCount) pecasCount.textContent = "Erro";
         });
         
         // Contar manutenções
         manutencoesRef.get().then((snapshot) => {
-            manutencoesCount.textContent = snapshot.size;
+            if (manutencoesCount) manutencoesCount.textContent = snapshot.size;
+        }).catch(error => {
+            console.error("Erro ao contar manutenções:", error);
+            if (manutencoesCount) manutencoesCount.textContent = "Erro";
         });
         
         // Contar alertas
         alertasRef.get().then((snapshot) => {
-            alertasCount.textContent = snapshot.size;
+            if (alertasCount) alertasCount.textContent = snapshot.size;
+        }).catch(error => {
+            console.error("Erro ao contar alertas:", error);
+            if (alertasCount) alertasCount.textContent = "Erro";
         });
     }
     
@@ -947,4 +1035,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (operacaoData) operacaoData.value = hoje;
     if (pecaUltimaTroca) pecaUltimaTroca.value = hoje;
     if (manutencaoData) manutencaoData.value = hoje;
+    
+    // CORREÇÃO: Chamar carregarDados explicitamente na inicialização
+    // Isso garante que os dados sejam carregados mesmo se a verificação de login já tiver ocorrido
+    setTimeout(function() {
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.carregarDados();
+        }
+    }, 500);
 });
