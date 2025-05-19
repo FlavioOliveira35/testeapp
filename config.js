@@ -2,6 +2,7 @@
   // Import the functions you need from the SDKs you need
   import { } from 'firebase/firestore';
   import { } from 'firebase/auth';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
   // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyAlFPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
@@ -15,10 +16,10 @@
 
 
 // Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
 // Inicializar Firestore
-const db = firebase.firestore();
+const db = app.firestore();
 
 // Referências para as coleções
 const maquinasRef = db.collection('maquinas');
