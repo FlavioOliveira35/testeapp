@@ -1,4 +1,6 @@
 // Autenticação local simplificada
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM - Login
     const loginContainer = document.getElementById('login-container');

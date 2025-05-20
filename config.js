@@ -1,4 +1,6 @@
 // Configuração do Firebase
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyA1FPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
   authDomain: "controle-4b27d.firebaseapp.com",
@@ -11,16 +13,12 @@ const firebaseConfig = {
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Inicializar Firestore
-const db = firebase.firestore();
+   
+   const db = firebase.firestore();
 
-// Referências para as coleções
-const maquinasRef = db.collection('maquinas');
-const operacoesRef = db.collection('operacoes');
+//Referências para as coleções
+const maquinasRef = db.collection("maquinas");
+const operacoesRef = db.collection("operacoes");
 const pecasRef = db.collection('pecas');
 const manutencoesRef = db.collection('manutencoes');
 const alertasRef = db.collection('alertas');
-
-// Verificar se o Firebase está inicializado corretamente
-console.log("Firebase inicializado:", firebase.app().name);
-console.log("Firestore disponível:", !!db);

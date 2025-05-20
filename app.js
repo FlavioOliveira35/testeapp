@@ -1,4 +1,6 @@
-// Funcionalidades principais do aplicativo
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Inicializando aplicativo...");
     
