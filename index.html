@@ -5,31 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gerenciamento de Marmoraria</title>
     <link rel="stylesheet" href="style.css">
-   
 </head>
 <body>
-    <!-- Tela de Login -->
+    <!-- Container de Login -->
     <div id="login-container" class="container">
-        <div class="card">
+        <h1>Sistema de Gerenciamento de Marmoraria</h1>
+        <div class="login-form">
             <h2>Login - Sistema de Gerenciamento</h2>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" placeholder="Seu email" value="flavio_cesar_oliveira@hotmail.com">
+                <input type="email" id="email" placeholder="Seu email">
             </div>
             <div class="form-group">
                 <label for="password">Senha:</label>
-                <input type="password" id="password" placeholder="Sua senha" value="321">
+                <input type="password" id="password" placeholder="Sua senha">
             </div>
-            <button id="login-btn" class="btn primary-btn">Entrar</button>
             <p id="login-error" class="error-message"></p>
+            <button id="login-btn" class="btn primary-btn">Entrar</button>
         </div>
     </div>
 
-    <!-- Conteúdo Principal (visível após login) -->
+    <!-- Conteúdo Principal (após login) -->
     <div id="main-content" class="hidden">
         <header>
             <h1>Sistema de Gerenciamento de Marmoraria</h1>
-            <button id="logout-btn" class="btn">Sair</button>
+            <button id="logout-btn" class="btn secondary-btn">Sair</button>
         </header>
 
         <nav>
@@ -48,30 +48,31 @@
             <section id="dashboard" class="page">
                 <h2>Dashboard</h2>
                 <div class="dashboard-cards">
-                    <div class="card summary-card">
+                    <div class="card">
                         <h3>Máquinas</h3>
-                        <p class="count" id="maquinas-count">0</p>
+                        <p id="maquinas-count" class="count">0</p>
                     </div>
-                    <div class="card summary-card">
+                    <div class="card">
                         <h3>Operações</h3>
-                        <p class="count" id="operacoes-count">0</p>
+                        <p id="operacoes-count" class="count">0</p>
                     </div>
-                    <div class="card summary-card">
+                    <div class="card">
                         <h3>Peças</h3>
-                        <p class="count" id="pecas-count">0</p>
+                        <p id="pecas-count" class="count">0</p>
                     </div>
-                    <div class="card summary-card">
+                    <div class="card">
                         <h3>Manutenções</h3>
-                        <p class="count" id="manutencoes-count">0</p>
+                        <p id="manutencoes-count" class="count">0</p>
                     </div>
-                    <div class="card summary-card alert-card">
+                    <div class="card">
                         <h3>Alertas</h3>
-                        <p class="count" id="alertas-count">0</p>
+                        <p id="alertas-count" class="count">0</p>
                     </div>
                 </div>
-                <div class="card">
+
+                <div class="dashboard-alerts">
                     <h3>Alertas Recentes</h3>
-                    <div id="alertas-recentes-list" class="list-container">
+                    <div id="alertas-recentes-list" class="list">
                         <p class="empty-message">Nenhum alerta recente.</p>
                     </div>
                 </div>
@@ -80,8 +81,9 @@
             <!-- Máquinas -->
             <section id="maquinas" class="page hidden">
                 <h2>Gerenciamento de Máquinas</h2>
-                <div class="card">
-                    <h3>Adicionar Nova Máquina</h3>
+                
+                <div class="form-container">
+                    <h3>Cadastrar Nova Máquina</h3>
                     <div class="form-group">
                         <label for="maquina-nome">Nome:</label>
                         <input type="text" id="maquina-nome" placeholder="Nome da máquina">
@@ -92,7 +94,7 @@
                     </div>
                     <div class="form-group">
                         <label for="maquina-fabricante">Fabricante:</label>
-                        <input type="text" id="maquina-fabricante" placeholder="Fabricante">
+                        <input type="text" id="maquina-fabricante" placeholder="Fabricante da máquina">
                     </div>
                     <div class="form-group">
                         <label for="maquina-data-aquisicao">Data de Aquisição:</label>
@@ -103,14 +105,15 @@
                         <select id="maquina-status">
                             <option value="Ativa">Ativa</option>
                             <option value="Em Manutenção">Em Manutenção</option>
-                            <option value="Inativa">Inativa</option>
+                            <option value="Desativada">Desativada</option>
                         </select>
                     </div>
                     <button id="maquina-salvar" class="btn primary-btn">Salvar</button>
                 </div>
-                <div class="card">
+
+                <div class="list-container">
                     <h3>Máquinas Cadastradas</h3>
-                    <div id="maquinas-list" class="list-container">
+                    <div id="maquinas-list" class="list">
                         <p class="empty-message">Nenhuma máquina cadastrada.</p>
                     </div>
                 </div>
@@ -119,8 +122,9 @@
             <!-- Operações -->
             <section id="operacoes" class="page hidden">
                 <h2>Registro de Operações</h2>
-                <div class="card">
-                    <h3>Adicionar Nova Operação</h3>
+                
+                <div class="form-container">
+                    <h3>Registrar Nova Operação</h3>
                     <div class="form-group">
                         <label for="operacao-maquina">Máquina:</label>
                         <select id="operacao-maquina">
@@ -145,13 +149,14 @@
                     </div>
                     <div class="form-group">
                         <label for="operacao-observacoes">Observações:</label>
-                        <textarea id="operacao-observacoes" placeholder="Observações"></textarea>
+                        <textarea id="operacao-observacoes" placeholder="Observações sobre a operação"></textarea>
                     </div>
                     <button id="operacao-salvar" class="btn primary-btn">Salvar</button>
                 </div>
-                <div class="card">
+
+                <div class="list-container">
                     <h3>Operações Registradas</h3>
-                    <div id="operacoes-list" class="list-container">
+                    <div id="operacoes-list" class="list">
                         <p class="empty-message">Nenhuma operação registrada.</p>
                     </div>
                 </div>
@@ -160,8 +165,9 @@
             <!-- Peças -->
             <section id="pecas" class="page hidden">
                 <h2>Cadastro de Peças</h2>
-                <div class="card">
-                    <h3>Adicionar Nova Peça</h3>
+                
+                <div class="form-container">
+                    <h3>Cadastrar Nova Peça</h3>
                     <div class="form-group">
                         <label for="peca-nome">Nome:</label>
                         <input type="text" id="peca-nome" placeholder="Nome da peça">
@@ -186,13 +192,14 @@
                     </div>
                     <div class="form-group">
                         <label for="peca-estoque">Quantidade em Estoque:</label>
-                        <input type="number" id="peca-estoque" min="0" placeholder="Quantidade">
+                        <input type="number" id="peca-estoque" min="0" placeholder="Quantidade em estoque">
                     </div>
                     <button id="peca-salvar" class="btn primary-btn">Salvar</button>
                 </div>
-                <div class="card">
+
+                <div class="list-container">
                     <h3>Peças Cadastradas</h3>
-                    <div id="pecas-list" class="list-container">
+                    <div id="pecas-list" class="list">
                         <p class="empty-message">Nenhuma peça cadastrada.</p>
                     </div>
                 </div>
@@ -200,9 +207,10 @@
 
             <!-- Manutenções -->
             <section id="manutencoes" class="page hidden">
-                <h2>Cadastro de Manutenções</h2>
-                <div class="card">
-                    <h3>Adicionar Nova Manutenção</h3>
+                <h2>Registro de Manutenções</h2>
+                
+                <div class="form-container">
+                    <h3>Registrar Nova Manutenção</h3>
                     <div class="form-group">
                         <label for="manutencao-maquina">Máquina:</label>
                         <select id="manutencao-maquina">
@@ -210,7 +218,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="manutencao-tipo">Tipo:</label>
+                        <label for="manutencao-tipo">Tipo de Manutenção:</label>
                         <select id="manutencao-tipo">
                             <option value="Preventiva">Preventiva</option>
                             <option value="Corretiva">Corretiva</option>
@@ -230,13 +238,14 @@
                     </div>
                     <div class="form-group">
                         <label for="manutencao-custo">Custo (R$):</label>
-                        <input type="number" id="manutencao-custo" min="0" step="0.01" placeholder="Custo em R$">
+                        <input type="number" id="manutencao-custo" min="0" step="0.01" placeholder="Custo em reais">
                     </div>
                     <button id="manutencao-salvar" class="btn primary-btn">Salvar</button>
                 </div>
-                <div class="card">
+
+                <div class="list-container">
                     <h3>Manutenções Registradas</h3>
-                    <div id="manutencoes-list" class="list-container">
+                    <div id="manutencoes-list" class="list">
                         <p class="empty-message">Nenhuma manutenção registrada.</p>
                     </div>
                 </div>
@@ -244,25 +253,30 @@
 
             <!-- Alertas -->
             <section id="alertas" class="page hidden">
-                <h2>Alertas</h2>
-                <div class="card">
+                <h2>Sistema de Alertas</h2>
+                
+                <div class="list-container full-width">
                     <h3>Alertas Ativos</h3>
-                    <div id="alertas-list" class="list-container">
+                    <div id="alertas-list" class="list">
                         <p class="empty-message">Nenhum alerta ativo.</p>
                     </div>
                 </div>
             </section>
         </main>
+
+        <footer>
+            <p>&copy; 2025 Sistema de Gerenciamento de Marmoraria</p>
+        </footer>
     </div>
 
-     <!-- Firebase SDK -->
-     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-     
+    <!-- Firebase App (a base) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-     <script src="config.js"></script>
-    
-   <script src="app.js"></script>
-   <script src="auth.js"></script>
+    <!-- Scripts da aplicação -->
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
