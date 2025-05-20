@@ -1,5 +1,21 @@
 // Funcionalidades principais do aplicativo
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("Inicializando aplicativo...");
+    
+    // Verificar se o Firebase está disponível
+    if (!window.firebase || !firebase.firestore) {
+        console.error("Firebase ou Firestore não estão disponíveis!");
+        alert("Erro: Firebase não está carregado corretamente. Verifique a conexão com a internet e recarregue a página.");
+        return;
+    }
+    
+    // Verificar se as referências às coleções estão disponíveis
+    if (!window.maquinasRef || !window.operacoesRef || !window.pecasRef || !window.manutencoesRef || !window.alertasRef) {
+        console.error("Referências às coleções do Firestore não estão disponíveis!");
+        alert("Erro: Referências do Firebase não estão configuradas corretamente. Verifique o arquivo config.js.");
+        return;
+    }
+    
     // Elementos de navegação
     const navLinks = document.querySelectorAll('.nav-link');
     const pages = document.querySelectorAll('.page');
@@ -153,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Salvar máquina
     if (maquinaSalvar) {
         maquinaSalvar.addEventListener('click', function() {
+            console.log("Botão salvar máquina clicado");
             const nome = maquinaNome.value.trim();
             const modelo = maquinaModelo.value.trim();
             const fabricante = maquinaFabricante.value.trim();
@@ -259,7 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Operações
     function carregarOperacoes() {
+        console.log("Tentando carregar operações do Firebase...");
         operacoesRef.get().then((snapshot) => {
+            console.log("Resposta do Firebase para operações:", snapshot.size, "documentos");
             if (!operacoesList) return;
             
             if (snapshot.empty) {
@@ -312,7 +331,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Salvar operação
     if (operacaoSalvar) {
+        console.log("Botão de salvar operação encontrado, adicionando event listener");
         operacaoSalvar.addEventListener('click', function() {
+            console.log("Botão salvar operação clicado");
             const maquinaId = operacaoMaquina.value;
             const tipo = operacaoTipo.value.trim();
             const data = operacaoData.value;
@@ -335,10 +356,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataCadastro: new Date().toISOString()
             };
             
+            console.log("Tentando salvar operação:", operacaoData);
+            
             if (editandoOperacaoId) {
                 // Atualizar operação existente
                 operacoesRef.doc(editandoOperacaoId).update(operacaoData)
                     .then(() => {
+                        console.log("Operação atualizada com sucesso!");
                         limparFormularioOperacao();
                         carregarOperacoes();
                         atualizarDashboard();
@@ -346,12 +370,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error("Erro ao atualizar operação:", error);
-                        alert('Erro ao atualizar operação. Tente novamente.');
+                        alert('Erro ao atualizar operação. Tente novamente. Erro: ' + error.message);
                     });
             } else {
                 // Adicionar nova operação
                 operacoesRef.add(operacaoData)
                     .then(() => {
+                        console.log("Operação adicionada com sucesso!");
                         limparFormularioOperacao();
                         carregarOperacoes();
                         atualizarDashboard();
@@ -359,10 +384,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error("Erro ao adicionar operação:", error);
-                        alert('Erro ao adicionar operação. Tente novamente.');
+                        alert('Erro ao adicionar operação. Tente novamente. Erro: ' + error.message);
                     });
             }
         });
+    } else {
+        console.error("Botão de salvar operação não encontrado!");
     }
     
     function limparFormularioOperacao() {
@@ -419,7 +446,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Peças
     function carregarPecas() {
+        console.log("Tentando carregar peças do Firebase...");
         pecasRef.get().then((snapshot) => {
+            console.log("Resposta do Firebase para peças:", snapshot.size, "documentos");
             if (!pecasList) return;
             
             if (snapshot.empty) {
@@ -475,6 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Salvar peça
     if (pecaSalvar) {
         pecaSalvar.addEventListener('click', function() {
+            console.log("Botão salvar peça clicado");
             const nome = pecaNome.value.trim();
             const codigo = pecaCodigo.value.trim();
             const maquinaId = pecaMaquina.value;
@@ -497,10 +527,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataCadastro: new Date().toISOString()
             };
             
+            console.log("Tentando salvar peça:", pecaData);
+            
             if (editandoPecaId) {
                 // Atualizar peça existente
                 pecasRef.doc(editandoPecaId).update(pecaData)
                     .then(() => {
+                        console.log("Peça atualizada com sucesso!");
                         limparFormularioPeca();
                         carregarPecas();
                         atualizarDashboard();
@@ -508,12 +541,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error("Erro ao atualizar peça:", error);
-                        alert('Erro ao atualizar peça. Tente novamente.');
+                        alert('Erro ao atualizar peça. Tente novamente. Erro: ' + error.message);
                     });
             } else {
                 // Adicionar nova peça
                 pecasRef.add(pecaData)
                     .then(() => {
+                        console.log("Peça adicionada com sucesso!");
                         limparFormularioPeca();
                         carregarPecas();
                         atualizarDashboard();
@@ -521,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error("Erro ao adicionar peça:", error);
-                        alert('Erro ao adicionar peça. Tente novamente.');
+                        alert('Erro ao adicionar peça. Tente novamente. Erro: ' + error.message);
                     });
             }
         });
@@ -581,7 +615,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Manutenções
     function carregarManutencoes() {
+        console.log("Tentando carregar manutenções do Firebase...");
         manutencoesRef.get().then((snapshot) => {
+            console.log("Resposta do Firebase para manutenções:", snapshot.size, "documentos");
             if (!manutencoesList) return;
             
             if (snapshot.empty) {
@@ -637,7 +673,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Salvar manutenção
     if (manutencaoSalvar) {
+        console.log("Botão de salvar manutenção encontrado, adicionando event listener");
         manutencaoSalvar.addEventListener('click', function() {
+            console.log("Botão salvar manutenção clicado");
             const maquinaId = manutencaoMaquina.value;
             const tipo = manutencaoTipo.value;
             const data = manutencaoData.value;
@@ -660,10 +698,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataCadastro: new Date().toISOString()
             };
             
+            console.log("Tentando salvar manutenção:", manutencaoData);
+            
             if (editandoManutencaoId) {
                 // Atualizar manutenção existente
                 manutencoesRef.doc(editandoManutencaoId).update(manutencaoData)
                     .then(() => {
+                        console.log("Manutenção atualizada com sucesso!");
                         limparFormularioManutencao();
                         carregarManutencoes();
                         atualizarDashboard();
@@ -671,12 +712,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error("Erro ao atualizar manutenção:", error);
-                        alert('Erro ao atualizar manutenção. Tente novamente.');
+                        alert('Erro ao atualizar manutenção. Tente novamente. Erro: ' + error.message);
                     });
             } else {
                 // Adicionar nova manutenção
                 manutencoesRef.add(manutencaoData)
                     .then(() => {
+                        console.log("Manutenção adicionada com sucesso!");
                         limparFormularioManutencao();
                         carregarManutencoes();
                         atualizarDashboard();
@@ -684,10 +726,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error("Erro ao adicionar manutenção:", error);
-                        alert('Erro ao adicionar manutenção. Tente novamente.');
+                        alert('Erro ao adicionar manutenção. Tente novamente. Erro: ' + error.message);
                     });
             }
         });
+    } else {
+        console.error("Botão de salvar manutenção não encontrado!");
     }
     
     function limparFormularioManutencao() {
@@ -744,7 +788,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para Alertas
     function carregarAlertas() {
+        console.log("Tentando carregar alertas do Firebase...");
         alertasRef.get().then((snapshot) => {
+            console.log("Resposta do Firebase para alertas:", snapshot.size, "documentos");
             if (!alertasList || !alertasRecentesList) return;
             
             if (snapshot.empty) {
@@ -1040,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Isso garante que os dados sejam carregados mesmo se a verificação de login já tiver ocorrido
     setTimeout(function() {
         if (localStorage.getItem('isLoggedIn') === 'true') {
+            console.log("Chamando carregarDados após timeout");
             window.carregarDados();
         }
     }, 500);

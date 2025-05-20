@@ -1,4 +1,4 @@
-// Autenticação local simplificada (sem Firebase)
+// Autenticação local simplificada
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM - Login
     const loginContainer = document.getElementById('login-container');
@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // CORREÇÃO: Garantir que carregarDados seja chamada após login
             if (typeof window.carregarDados === 'function') {
+                console.log("Chamando carregarDados após verificação de login");
                 window.carregarDados();
             } else {
                 console.error('Função carregarDados não encontrada. Verifique se app.js está carregado corretamente.');
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // CORREÇÃO: Chamar carregarDados explicitamente após login bem-sucedido
             if (typeof window.carregarDados === 'function') {
+                console.log("Chamando carregarDados após login bem-sucedido");
                 window.carregarDados();
             } else {
                 console.error('Função carregarDados não encontrada. Verifique se app.js está carregado corretamente.');
