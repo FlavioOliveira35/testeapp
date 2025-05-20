@@ -1,6 +1,4 @@
 // Configuração do Firebase
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyA1FPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
   authDomain: "controle-4b27d.firebaseapp.com",
@@ -14,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
    
-   const db = firebase.firestore();
+const db = firebase.firestore();
 
 //Referências para as coleções
 const maquinasRef = db.collection("maquinas");
@@ -22,3 +20,4 @@ const operacoesRef = db.collection("operacoes");
 const pecasRef = db.collection('pecas');
 const manutencoesRef = db.collection('manutencoes');
 const alertasRef = db.collection('alertas');
+

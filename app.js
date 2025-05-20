@@ -4,19 +4,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Inicializando aplicativo...");
     
-    // Verificar se o Firebase está disponível
-    if (!window.firebase || !firebase.firestore) {
-        console.error("Firebase ou Firestore não estão disponíveis!");
-        alert("Erro: Firebase não está carregado corretamente. Verifique a conexão com a internet e recarregue a página.");
-        return;
-    }
-    
-    // Verificar se as referências às coleções estão disponíveis
-    if (!window.maquinasRef || !window.operacoesRef || !window.pecasRef || !window.manutencoesRef || !window.alertasRef) {
-        console.error("Referências às coleções do Firestore não estão disponíveis!");
-        alert("Erro: Referências do Firebase não estão configuradas corretamente. Verifique o arquivo config.js.");
-        return;
-    }
     
     // Elementos de navegação
     const navLinks = document.querySelectorAll('.nav-link');
