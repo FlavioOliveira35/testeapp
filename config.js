@@ -1,9 +1,6 @@
 
   // Your web app's Firebase configuration
-  import { initializeApp } from "firebase/app";
-  import { getFirestore } from "firebase/firestore";
-
-  const firebaseConfig = {    
+  const firebaseConfig = {
     apiKey: "AIzaSyAlFPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
     authDomain: "controle-4b27d.firebaseapp.com",
     projectId: "controle-4b27d",
@@ -13,12 +10,12 @@
   };
   
 
-const app = initializeApp(firebaseConfig);
+
 // Inicializar Firebase
-//firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
 // Inicializar Firestore
-const db = getFirestore(app);
+const db = firebase.firestore();
 
 // Referências para as coleções
 const maquinasRef = db.collection("maquinas");
