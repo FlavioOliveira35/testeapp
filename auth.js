@@ -1,5 +1,5 @@
 // Autenticação local simplificada com suporte a módulos ES6
-//import { getDocs } from 'config.js'
+import { getDocs } from 'config.js'
 
 
 document.addEventListener('DOMContentLoaded', function() {

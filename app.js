@@ -1,4 +1,8 @@
 // Funcionalidades principais do aplicativo - Versão modular ES6
+
+import {  getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
 import { 
   db, 
   maquinasCollection, 

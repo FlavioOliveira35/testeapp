@@ -17,13 +17,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Referências para as coleções
-const maquinasCollection = collection(db, 'maquinas');
+
+const maquinasCollection =  await getDocs(collection(db, 'maquinas'));
 const operacoesCollection = collection(db, 'operacoes');
 const pecasCollection = collection(db, 'pecas');
 const manutencoesCollection = collection(db, 'manutencoes');
 const alertasCollection = collection(db, 'alertas');
 
 // Verificar se o Firebase está inicializado corretamente
+console.log("Firestore disponível:", maquinasCollection);
 console.log("Firebase inicializado:", app.name);
 console.log("Firestore disponível:", !!db);
 
