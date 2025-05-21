@@ -1,9 +1,27 @@
-
-
+// Funcionalidades principais do aplicativo - Versão modular ES6
+import { 
+  db, 
+  maquinasCollection, 
+  operacoesCollection, 
+  pecasCollection, 
+  manutencoesCollection, 
+  alertasCollection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
+} from 'config.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("Inicializando aplicativo...");
+    console.log("Inicializando aplicativo com Firebase modular...");
     
+    // Verificar se o Firebase está disponível
+    if (!db) {
+        console.error("Firestore não está disponível!");
+        alert("Erro: Firebase não está carregado corretamente. Verifique a conexão com a internet e recarregue a página.");
+        return;
+    }
     
     // Elementos de navegação
     const navLinks = document.querySelectorAll('.nav-link');
@@ -85,22 +103,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // CORREÇÃO: Tornar a função carregarDados global para que auth.js possa acessá-la
-    window.carregarDados = function() {
+    // Tornar a função carregarDados global para que auth.js possa acessá-la
+    window.carregarDados = async function() {
         console.log("Carregando dados do Firebase...");
-        carregarMaquinas();
-        carregarOperacoes();
-        carregarPecas();
-        carregarManutencoes();
-        carregarAlertas();
-        atualizarDashboard();
+        await carregarMaquinas();
+        await carregarOperacoes();
+        await carregarPecas();
+        await carregarManutencoes();
+        await carregarAlertas();
+        await atualizarDashboard();
     };
     
     // Funções para Máquinas
-    function carregarMaquinas() {
+    async function carregarMaquinas() {
         console.log("Tentando carregar máquinas do Firebase...");
-        maquinasRef.get().then((snapshot) => {
+        try {
+            const snapshot = await getDocs(maquinasCollection);
             console.log("Resposta do Firebase para máquinas:", snapshot.size, "documentos");
+            
             if (snapshot.empty) {
                 maquinasList.innerHTML = '<p class="empty-message">Nenhuma máquina cadastrada.</p>';
                 return;
@@ -127,21 +147,22 @@ document.addEventListener('DOMContentLoaded', function() {
             maquinasList.innerHTML = html;
             
             // Atualizar selects de máquinas em outros formulários
-            atualizarSelectsMaquinas();
-        }).catch(error => {
+            await atualizarSelectsMaquinas();
+        } catch (error) {
             console.error("Erro ao carregar máquinas:", error);
             maquinasList.innerHTML = '<p class="empty-message">Erro ao carregar máquinas. Verifique o console para mais detalhes.</p>';
-        });
+        }
     }
     
-    function atualizarSelectsMaquinas() {
+    async function atualizarSelectsMaquinas() {
         // Limpar selects
         if (operacaoMaquina) operacaoMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
         if (pecaMaquina) pecaMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
         if (manutencaoMaquina) manutencaoMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
         
-        // Preencher com máquinas cadastradas
-        maquinasRef.get().then((snapshot) => {
+        try {
+            // Preencher com máquinas cadastradas
+            const snapshot = await getDocs(maquinasCollection);
             snapshot.forEach(doc => {
                 const maquina = doc.data();
                 const option = `<option value="${doc.id}">${maquina.nome}</option>`;
@@ -150,14 +171,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (pecaMaquina) pecaMaquina.innerHTML += option;
                 if (manutencaoMaquina) manutencaoMaquina.innerHTML += option;
             });
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao atualizar selects de máquinas:", error);
-        });
+        }
     }
     
     // Salvar máquina
     if (maquinaSalvar) {
-        maquinaSalvar.addEventListener('click', function() {
+        maquinaSalvar.addEventListener('click', async function() {
             console.log("Botão salvar máquina clicado");
             const nome = maquinaNome.value.trim();
             const modelo = maquinaModelo.value.trim();
@@ -181,34 +202,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log("Tentando salvar máquina:", maquinaData);
             
-            if (editandoMaquinaId) {
-                // Atualizar máquina existente
-                maquinasRef.doc(editandoMaquinaId).update(maquinaData)
-                    .then(() => {
-                        console.log("Máquina atualizada com sucesso!");
-                        limparFormularioMaquina();
-                        carregarMaquinas();
-                        atualizarDashboard();
-                        alert('Máquina atualizada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao atualizar máquina:", error);
-                        alert('Erro ao atualizar máquina. Tente novamente. Erro: ' + error.message);
-                    });
-            } else {
-                // Adicionar nova máquina
-                maquinasRef.add(maquinaData)
-                    .then(() => {
-                        console.log("Máquina adicionada com sucesso!");
-                        limparFormularioMaquina();
-                        carregarMaquinas();
-                        atualizarDashboard();
-                        alert('Máquina adicionada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao adicionar máquina:", error);
-                        alert('Erro ao adicionar máquina. Tente novamente. Erro: ' + error.message);
-                    });
+            try {
+                if (editandoMaquinaId) {
+                    // Atualizar máquina existente
+                    const docRef = doc(db, 'maquinas', editandoMaquinaId);
+                    await updateDoc(docRef, maquinaData);
+                    console.log("Máquina atualizada com sucesso!");
+                    limparFormularioMaquina();
+                    await carregarMaquinas();
+                    await atualizarDashboard();
+                    alert('Máquina atualizada com sucesso!');
+                } else {
+                    // Adicionar nova máquina
+                    await addDoc(maquinasCollection, maquinaData);
+                    console.log("Máquina adicionada com sucesso!");
+                    limparFormularioMaquina();
+                    await carregarMaquinas();
+                    await atualizarDashboard();
+                    alert('Máquina adicionada com sucesso!');
+                }
+            } catch (error) {
+                console.error("Erro ao salvar máquina:", error);
+                alert('Erro ao salvar máquina. Tente novamente. Erro: ' + error.message);
             }
         });
     }
@@ -224,10 +239,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Funções para editar e excluir máquina
-    window.editarMaquina = function(id) {
-        maquinasRef.doc(id).get().then(doc => {
-            if (doc.exists) {
-                const maquina = doc.data();
+    window.editarMaquina = async function(id) {
+        try {
+            const docRef = doc(db, 'maquinas', id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const maquina = docSnap.data();
                 if (maquinaNome) maquinaNome.value = maquina.nome;
                 if (maquinaModelo) maquinaModelo.value = maquina.modelo;
                 if (maquinaFabricante) maquinaFabricante.value = maquina.fabricante;
@@ -243,30 +261,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     formularioHeading.scrollIntoView({ behavior: 'smooth' });
                 }
             }
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao carregar máquina para edição:", error);
-        });
+        }
     };
     
-    window.excluirMaquina = function(id) {
+    window.excluirMaquina = async function(id) {
         if (confirm('Tem certeza que deseja excluir esta máquina? Esta ação não pode ser desfeita.')) {
-            maquinasRef.doc(id).delete()
-                .then(() => {
-                    carregarMaquinas();
-                    atualizarDashboard();
-                    alert('Máquina excluída com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao excluir máquina:", error);
-                    alert('Erro ao excluir máquina. Tente novamente.');
-                });
+            try {
+                const docRef = doc(db, 'maquinas', id);
+                await deleteDoc(docRef);
+                await carregarMaquinas();
+                await atualizarDashboard();
+                alert('Máquina excluída com sucesso!');
+            } catch (error) {
+                console.error("Erro ao excluir máquina:", error);
+                alert('Erro ao excluir máquina. Tente novamente.');
+            }
         }
     };
     
     // Funções para Operações
-    function carregarOperacoes() {
+    async function carregarOperacoes() {
         console.log("Tentando carregar operações do Firebase...");
-        operacoesRef.get().then((snapshot) => {
+        try {
+            const snapshot = await getDocs(operacoesCollection);
             console.log("Resposta do Firebase para operações:", snapshot.size, "documentos");
             if (!operacoesList) return;
             
@@ -297,31 +316,34 @@ document.addEventListener('DOMContentLoaded', function() {
             operacoesList.innerHTML = html;
             
             // Carregar nomes das máquinas
-            document.querySelectorAll('.maquina-nome').forEach(span => {
+            document.querySelectorAll('.maquina-nome').forEach(async span => {
                 const maquinaId = span.getAttribute('data-id');
-                maquinasRef.doc(maquinaId).get().then(doc => {
-                    if (doc.exists) {
-                        span.textContent = doc.data().nome;
+                try {
+                    const docRef = doc(db, 'maquinas', maquinaId);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        span.textContent = docSnap.data().nome;
                     } else {
                         span.textContent = 'Máquina não encontrada';
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.error("Erro ao carregar nome da máquina:", error);
                     span.textContent = 'Erro ao carregar';
-                });
+                }
             });
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao carregar operações:", error);
             if (operacoesList) {
                 operacoesList.innerHTML = '<p class="empty-message">Erro ao carregar operações. Verifique o console para mais detalhes.</p>';
             }
-        });
+        }
     }
     
     // Salvar operação
     if (operacaoSalvar) {
         console.log("Botão de salvar operação encontrado, adicionando event listener");
-        operacaoSalvar.addEventListener('click', function() {
+        operacaoSalvar.addEventListener('click', async function() {
             console.log("Botão salvar operação clicado");
             const maquinaId = operacaoMaquina.value;
             const tipo = operacaoTipo.value.trim();
@@ -347,34 +369,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log("Tentando salvar operação:", operacaoData);
             
-            if (editandoOperacaoId) {
-                // Atualizar operação existente
-                operacoesRef.doc(editandoOperacaoId).update(operacaoData)
-                    .then(() => {
-                        console.log("Operação atualizada com sucesso!");
-                        limparFormularioOperacao();
-                        carregarOperacoes();
-                        atualizarDashboard();
-                        alert('Operação atualizada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao atualizar operação:", error);
-                        alert('Erro ao atualizar operação. Tente novamente. Erro: ' + error.message);
-                    });
-            } else {
-                // Adicionar nova operação
-                operacoesRef.add(operacaoData)
-                    .then(() => {
-                        console.log("Operação adicionada com sucesso!");
-                        limparFormularioOperacao();
-                        carregarOperacoes();
-                        atualizarDashboard();
-                        alert('Operação adicionada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao adicionar operação:", error);
-                        alert('Erro ao adicionar operação. Tente novamente. Erro: ' + error.message);
-                    });
+            try {
+                if (editandoOperacaoId) {
+                    // Atualizar operação existente
+                    const docRef = doc(db, 'operacoes', editandoOperacaoId);
+                    await updateDoc(docRef, operacaoData);
+                    console.log("Operação atualizada com sucesso!");
+                    limparFormularioOperacao();
+                    await carregarOperacoes();
+                    await atualizarDashboard();
+                    alert('Operação atualizada com sucesso!');
+                } else {
+                    // Adicionar nova operação
+                    await addDoc(operacoesCollection, operacaoData);
+                    console.log("Operação adicionada com sucesso!");
+                    limparFormularioOperacao();
+                    await carregarOperacoes();
+                    await atualizarDashboard();
+                    alert('Operação adicionada com sucesso!');
+                }
+            } catch (error) {
+                console.error("Erro ao salvar operação:", error);
+                alert('Erro ao salvar operação. Tente novamente. Erro: ' + error.message);
             }
         });
     } else {
@@ -393,10 +409,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Funções para editar e excluir operação
-    window.editarOperacao = function(id) {
-        operacoesRef.doc(id).get().then(doc => {
-            if (doc.exists) {
-                const operacao = doc.data();
+    window.editarOperacao = async function(id) {
+        try {
+            const docRef = doc(db, 'operacoes', id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const operacao = docSnap.data();
                 if (operacaoMaquina) operacaoMaquina.value = operacao.maquinaId;
                 if (operacaoTipo) operacaoTipo.value = operacao.tipo;
                 if (operacaoData) operacaoData.value = operacao.data;
@@ -413,30 +432,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     formularioHeading.scrollIntoView({ behavior: 'smooth' });
                 }
             }
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao carregar operação para edição:", error);
-        });
+        }
     };
     
-    window.excluirOperacao = function(id) {
+    window.excluirOperacao = async function(id) {
         if (confirm('Tem certeza que deseja excluir esta operação? Esta ação não pode ser desfeita.')) {
-            operacoesRef.doc(id).delete()
-                .then(() => {
-                    carregarOperacoes();
-                    atualizarDashboard();
-                    alert('Operação excluída com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao excluir operação:", error);
-                    alert('Erro ao excluir operação. Tente novamente.');
-                });
+            try {
+                const docRef = doc(db, 'operacoes', id);
+                await deleteDoc(docRef);
+                await carregarOperacoes();
+                await atualizarDashboard();
+                alert('Operação excluída com sucesso!');
+            } catch (error) {
+                console.error("Erro ao excluir operação:", error);
+                alert('Erro ao excluir operação. Tente novamente.');
+            }
         }
     };
     
     // Funções para Peças
-    function carregarPecas() {
+    async function carregarPecas() {
         console.log("Tentando carregar peças do Firebase...");
-        pecasRef.get().then((snapshot) => {
+        try {
+            const snapshot = await getDocs(pecasCollection);
             console.log("Resposta do Firebase para peças:", snapshot.size, "documentos");
             if (!pecasList) return;
             
@@ -466,33 +486,36 @@ document.addEventListener('DOMContentLoaded', function() {
             pecasList.innerHTML = html;
             
             // Carregar nomes das máquinas
-            document.querySelectorAll('.maquina-nome').forEach(span => {
+            document.querySelectorAll('.maquina-nome').forEach(async span => {
                 const maquinaId = span.getAttribute('data-id');
-                maquinasRef.doc(maquinaId).get().then(doc => {
-                    if (doc.exists) {
-                        span.textContent = doc.data().nome;
+                try {
+                    const docRef = doc(db, 'maquinas', maquinaId);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        span.textContent = docSnap.data().nome;
                     } else {
                         span.textContent = 'Máquina não encontrada';
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.error("Erro ao carregar nome da máquina:", error);
                     span.textContent = 'Erro ao carregar';
-                });
+                }
             });
             
             // Verificar peças com vida útil próxima do fim
-            verificarAlertasPecas();
-        }).catch(error => {
+            await verificarAlertasPecas();
+        } catch (error) {
             console.error("Erro ao carregar peças:", error);
             if (pecasList) {
                 pecasList.innerHTML = '<p class="empty-message">Erro ao carregar peças. Verifique o console para mais detalhes.</p>';
             }
-        });
+        }
     }
     
     // Salvar peça
     if (pecaSalvar) {
-        pecaSalvar.addEventListener('click', function() {
+        pecaSalvar.addEventListener('click', async function() {
             console.log("Botão salvar peça clicado");
             const nome = pecaNome.value.trim();
             const codigo = pecaCodigo.value.trim();
@@ -518,34 +541,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log("Tentando salvar peça:", pecaData);
             
-            if (editandoPecaId) {
-                // Atualizar peça existente
-                pecasRef.doc(editandoPecaId).update(pecaData)
-                    .then(() => {
-                        console.log("Peça atualizada com sucesso!");
-                        limparFormularioPeca();
-                        carregarPecas();
-                        atualizarDashboard();
-                        alert('Peça atualizada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao atualizar peça:", error);
-                        alert('Erro ao atualizar peça. Tente novamente. Erro: ' + error.message);
-                    });
-            } else {
-                // Adicionar nova peça
-                pecasRef.add(pecaData)
-                    .then(() => {
-                        console.log("Peça adicionada com sucesso!");
-                        limparFormularioPeca();
-                        carregarPecas();
-                        atualizarDashboard();
-                        alert('Peça adicionada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao adicionar peça:", error);
-                        alert('Erro ao adicionar peça. Tente novamente. Erro: ' + error.message);
-                    });
+            try {
+                if (editandoPecaId) {
+                    // Atualizar peça existente
+                    const docRef = doc(db, 'pecas', editandoPecaId);
+                    await updateDoc(docRef, pecaData);
+                    console.log("Peça atualizada com sucesso!");
+                    limparFormularioPeca();
+                    await carregarPecas();
+                    await atualizarDashboard();
+                    alert('Peça atualizada com sucesso!');
+                } else {
+                    // Adicionar nova peça
+                    await addDoc(pecasCollection, pecaData);
+                    console.log("Peça adicionada com sucesso!");
+                    limparFormularioPeca();
+                    await carregarPecas();
+                    await atualizarDashboard();
+                    alert('Peça adicionada com sucesso!');
+                }
+            } catch (error) {
+                console.error("Erro ao salvar peça:", error);
+                alert('Erro ao salvar peça. Tente novamente. Erro: ' + error.message);
             }
         });
     }
@@ -562,10 +579,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Funções para editar e excluir peça
-    window.editarPeca = function(id) {
-        pecasRef.doc(id).get().then(doc => {
-            if (doc.exists) {
-                const peca = doc.data();
+    window.editarPeca = async function(id) {
+        try {
+            const docRef = doc(db, 'pecas', id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const peca = docSnap.data();
                 if (pecaNome) pecaNome.value = peca.nome;
                 if (pecaCodigo) pecaCodigo.value = peca.codigo;
                 if (pecaMaquina) pecaMaquina.value = peca.maquinaId;
@@ -582,30 +602,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     formularioHeading.scrollIntoView({ behavior: 'smooth' });
                 }
             }
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao carregar peça para edição:", error);
-        });
+        }
     };
     
-    window.excluirPeca = function(id) {
+    window.excluirPeca = async function(id) {
         if (confirm('Tem certeza que deseja excluir esta peça? Esta ação não pode ser desfeita.')) {
-            pecasRef.doc(id).delete()
-                .then(() => {
-                    carregarPecas();
-                    atualizarDashboard();
-                    alert('Peça excluída com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao excluir peça:", error);
-                    alert('Erro ao excluir peça. Tente novamente.');
-                });
+            try {
+                const docRef = doc(db, 'pecas', id);
+                await deleteDoc(docRef);
+                await carregarPecas();
+                await atualizarDashboard();
+                alert('Peça excluída com sucesso!');
+            } catch (error) {
+                console.error("Erro ao excluir peça:", error);
+                alert('Erro ao excluir peça. Tente novamente.');
+            }
         }
     };
     
     // Funções para Manutenções
-    function carregarManutencoes() {
+    async function carregarManutencoes() {
         console.log("Tentando carregar manutenções do Firebase...");
-        manutencoesRef.get().then((snapshot) => {
+        try {
+            const snapshot = await getDocs(manutencoesCollection);
             console.log("Resposta do Firebase para manutenções:", snapshot.size, "documentos");
             if (!manutencoesList) return;
             
@@ -636,34 +657,37 @@ document.addEventListener('DOMContentLoaded', function() {
             manutencoesList.innerHTML = html;
             
             // Carregar nomes das máquinas
-            document.querySelectorAll('.maquina-nome').forEach(span => {
+            document.querySelectorAll('.maquina-nome').forEach(async span => {
                 const maquinaId = span.getAttribute('data-id');
-                maquinasRef.doc(maquinaId).get().then(doc => {
-                    if (doc.exists) {
-                        span.textContent = doc.data().nome;
+                try {
+                    const docRef = doc(db, 'maquinas', maquinaId);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        span.textContent = docSnap.data().nome;
                     } else {
                         span.textContent = 'Máquina não encontrada';
                     }
-                }).catch(error => {
+                } catch (error) {
                     console.error("Erro ao carregar nome da máquina:", error);
                     span.textContent = 'Erro ao carregar';
-                });
+                }
             });
             
             // Verificar próximas manutenções preventivas
-            verificarAlertasManutencoes();
-        }).catch(error => {
+            await verificarAlertasManutencoes();
+        } catch (error) {
             console.error("Erro ao carregar manutenções:", error);
             if (manutencoesList) {
                 manutencoesList.innerHTML = '<p class="empty-message">Erro ao carregar manutenções. Verifique o console para mais detalhes.</p>';
             }
-        });
+        }
     }
     
     // Salvar manutenção
     if (manutencaoSalvar) {
         console.log("Botão de salvar manutenção encontrado, adicionando event listener");
-        manutencaoSalvar.addEventListener('click', function() {
+        manutencaoSalvar.addEventListener('click', async function() {
             console.log("Botão salvar manutenção clicado");
             const maquinaId = manutencaoMaquina.value;
             const tipo = manutencaoTipo.value;
@@ -689,34 +713,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log("Tentando salvar manutenção:", manutencaoData);
             
-            if (editandoManutencaoId) {
-                // Atualizar manutenção existente
-                manutencoesRef.doc(editandoManutencaoId).update(manutencaoData)
-                    .then(() => {
-                        console.log("Manutenção atualizada com sucesso!");
-                        limparFormularioManutencao();
-                        carregarManutencoes();
-                        atualizarDashboard();
-                        alert('Manutenção atualizada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao atualizar manutenção:", error);
-                        alert('Erro ao atualizar manutenção. Tente novamente. Erro: ' + error.message);
-                    });
-            } else {
-                // Adicionar nova manutenção
-                manutencoesRef.add(manutencaoData)
-                    .then(() => {
-                        console.log("Manutenção adicionada com sucesso!");
-                        limparFormularioManutencao();
-                        carregarManutencoes();
-                        atualizarDashboard();
-                        alert('Manutenção adicionada com sucesso!');
-                    })
-                    .catch(error => {
-                        console.error("Erro ao adicionar manutenção:", error);
-                        alert('Erro ao adicionar manutenção. Tente novamente. Erro: ' + error.message);
-                    });
+            try {
+                if (editandoManutencaoId) {
+                    // Atualizar manutenção existente
+                    const docRef = doc(db, 'manutencoes', editandoManutencaoId);
+                    await updateDoc(docRef, manutencaoData);
+                    console.log("Manutenção atualizada com sucesso!");
+                    limparFormularioManutencao();
+                    await carregarManutencoes();
+                    await atualizarDashboard();
+                    alert('Manutenção atualizada com sucesso!');
+                } else {
+                    // Adicionar nova manutenção
+                    await addDoc(manutencoesCollection, manutencaoData);
+                    console.log("Manutenção adicionada com sucesso!");
+                    limparFormularioManutencao();
+                    await carregarManutencoes();
+                    await atualizarDashboard();
+                    alert('Manutenção adicionada com sucesso!');
+                }
+            } catch (error) {
+                console.error("Erro ao salvar manutenção:", error);
+                alert('Erro ao salvar manutenção. Tente novamente. Erro: ' + error.message);
             }
         });
     } else {
@@ -735,10 +753,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Funções para editar e excluir manutenção
-    window.editarManutencao = function(id) {
-        manutencoesRef.doc(id).get().then(doc => {
-            if (doc.exists) {
-                const manutencao = doc.data();
+    window.editarManutencao = async function(id) {
+        try {
+            const docRef = doc(db, 'manutencoes', id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const manutencao = docSnap.data();
                 if (manutencaoMaquina) manutencaoMaquina.value = manutencao.maquinaId;
                 if (manutencaoTipo) manutencaoTipo.value = manutencao.tipo;
                 if (manutencaoData) manutencaoData.value = manutencao.data;
@@ -755,30 +776,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     formularioHeading.scrollIntoView({ behavior: 'smooth' });
                 }
             }
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao carregar manutenção para edição:", error);
-        });
+        }
     };
     
-    window.excluirManutencao = function(id) {
+    window.excluirManutencao = async function(id) {
         if (confirm('Tem certeza que deseja excluir esta manutenção? Esta ação não pode ser desfeita.')) {
-            manutencoesRef.doc(id).delete()
-                .then(() => {
-                    carregarManutencoes();
-                    atualizarDashboard();
-                    alert('Manutenção excluída com sucesso!');
-                })
-                .catch(error => {
-                    console.error("Erro ao excluir manutenção:", error);
-                    alert('Erro ao excluir manutenção. Tente novamente.');
-                });
+            try {
+                const docRef = doc(db, 'manutencoes', id);
+                await deleteDoc(docRef);
+                await carregarManutencoes();
+                await atualizarDashboard();
+                alert('Manutenção excluída com sucesso!');
+            } catch (error) {
+                console.error("Erro ao excluir manutenção:", error);
+                alert('Erro ao excluir manutenção. Tente novamente.');
+            }
         }
     };
     
     // Funções para Alertas
-    function carregarAlertas() {
+    async function carregarAlertas() {
         console.log("Tentando carregar alertas do Firebase...");
-        alertasRef.get().then((snapshot) => {
+        try {
+            const snapshot = await getDocs(alertasCollection);
             console.log("Resposta do Firebase para alertas:", snapshot.size, "documentos");
             if (!alertasList || !alertasRecentesList) return;
             
@@ -817,7 +839,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             alertasList.innerHTML = html;
             alertasRecentesList.innerHTML = htmlRecentes || '<p class="empty-message">Nenhum alerta recente.</p>';
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao carregar alertas:", error);
             if (alertasList) {
                 alertasList.innerHTML = '<p class="empty-message">Erro ao carregar alertas. Verifique o console para mais detalhes.</p>';
@@ -825,235 +847,240 @@ document.addEventListener('DOMContentLoaded', function() {
             if (alertasRecentesList) {
                 alertasRecentesList.innerHTML = '<p class="empty-message">Erro ao carregar alertas. Verifique o console para mais detalhes.</p>';
             }
-        });
+        }
     }
     
     // Resolver alerta
-    window.resolverAlerta = function(id) {
+    window.resolverAlerta = async function(id) {
         if (confirm('Marcar este alerta como resolvido? Ele será removido da lista.')) {
-            alertasRef.doc(id).delete()
-                .then(() => {
-                    carregarAlertas();
-                    atualizarDashboard();
-                    alert('Alerta marcado como resolvido!');
-                })
-                .catch(error => {
-                    console.error("Erro ao resolver alerta:", error);
-                    alert('Erro ao resolver alerta. Tente novamente.');
-                });
+            try {
+                const docRef = doc(db, 'alertas', id);
+                await deleteDoc(docRef);
+                await carregarAlertas();
+                await atualizarDashboard();
+                alert('Alerta marcado como resolvido!');
+            } catch (error) {
+                console.error("Erro ao resolver alerta:", error);
+                alert('Erro ao resolver alerta. Tente novamente.');
+            }
         }
     };
     
     // Verificar alertas para peças
-    function verificarAlertasPecas() {
-        pecasRef.get().then((snapshot) => {
-            snapshot.forEach(doc => {
-                const peca = doc.data();
+    async function verificarAlertasPecas() {
+        try {
+            const snapshot = await getDocs(pecasCollection);
+            
+            snapshot.forEach(async docSnapshot => {
+                const peca = docSnapshot.data();
                 const ultimaTroca = new Date(peca.ultimaTroca);
                 const hoje = new Date();
                 
                 // Calcular horas de uso desde a última troca
-                const horasUso = calcularHorasUso(peca.maquinaId, ultimaTroca);
+                const horasUso = await calcularHorasUso(peca.maquinaId, ultimaTroca);
                 
                 // Verificar se está próximo da vida útil
                 if (horasUso >= peca.vidaUtil * 0.8) {
                     // Verificar se já existe um alerta para esta peça
-                    alertasRef.where('tipo', '==', 'peca')
-                        .where('referenciaId', '==', doc.id)
-                        .get()
-                        .then((alertaSnapshot) => {
-                            if (alertaSnapshot.empty) {
-                                // Criar alerta
-                                const prioridade = horasUso >= peca.vidaUtil ? 'Alta' : 'Média';
-                                const percentual = Math.round((horasUso / peca.vidaUtil) * 100);
-                                
-                                alertasRef.add({
-                                    tipo: 'peca',
-                                    referenciaId: doc.id,
-                                    titulo: `Troca de Peça: ${peca.nome}`,
-                                    descricao: `A peça ${peca.nome} (${peca.codigo}) atingiu ${percentual}% da sua vida útil. Considere programar uma substituição.`,
-                                    data: new Date().toISOString().split('T')[0],
-                                    prioridade: prioridade
-                                }).then(() => {
-                                    carregarAlertas();
-                                    atualizarDashboard();
-                                }).catch(error => {
-                                    console.error("Erro ao criar alerta de peça:", error);
-                                });
-                            }
-                        }).catch(error => {
-                            console.error("Erro ao verificar alertas existentes:", error);
+                    const alertaQuery = query(
+                        alertasCollection,
+                        where('tipo', '==', 'peca'),
+                        where('referenciaId', '==', docSnapshot.id)
+                    );
+                    
+                    const alertaSnapshot = await getDocs(alertaQuery);
+                    
+                    if (alertaSnapshot.empty) {
+                        // Criar alerta
+                        const prioridade = horasUso >= peca.vidaUtil ? 'Alta' : 'Média';
+                        const percentual = Math.round((horasUso / peca.vidaUtil) * 100);
+                        
+                        await addDoc(alertasCollection, {
+                            tipo: 'peca',
+                            referenciaId: docSnapshot.id,
+                            titulo: `Troca de Peça: ${peca.nome}`,
+                            descricao: `A peça ${peca.nome} (${peca.codigo}) atingiu ${percentual}% da sua vida útil. Considere programar uma substituição.`,
+                            data: new Date().toISOString().split('T')[0],
+                            prioridade: prioridade
                         });
+                        
+                        await carregarAlertas();
+                        await atualizarDashboard();
+                    }
                 }
                 
                 // Verificar estoque baixo
                 if (peca.estoque <= 1) {
                     // Verificar se já existe um alerta para estoque desta peça
-                    alertasRef.where('tipo', '==', 'estoque')
-                        .where('referenciaId', '==', doc.id)
-                        .get()
-                        .then((alertaSnapshot) => {
-                            if (alertaSnapshot.empty) {
-                                // Criar alerta
-                                alertasRef.add({
-                                    tipo: 'estoque',
-                                    referenciaId: doc.id,
-                                    titulo: `Estoque Baixo: ${peca.nome}`,
-                                    descricao: `O estoque da peça ${peca.nome} (${peca.codigo}) está baixo (${peca.estoque} unidades). Considere adquirir mais unidades.`,
-                                    data: new Date().toISOString().split('T')[0],
-                                    prioridade: peca.estoque === 0 ? 'Alta' : 'Média'
-                                }).then(() => {
-                                    carregarAlertas();
-                                    atualizarDashboard();
-                                }).catch(error => {
-                                    console.error("Erro ao criar alerta de estoque:", error);
-                                });
-                            }
-                        }).catch(error => {
-                            console.error("Erro ao verificar alertas de estoque existentes:", error);
+                    const alertaQuery = query(
+                        alertasCollection,
+                        where('tipo', '==', 'estoque'),
+                        where('referenciaId', '==', docSnapshot.id)
+                    );
+                    
+                    const alertaSnapshot = await getDocs(alertaQuery);
+                    
+                    if (alertaSnapshot.empty) {
+                        // Criar alerta
+                        await addDoc(alertasCollection, {
+                            tipo: 'estoque',
+                            referenciaId: docSnapshot.id,
+                            titulo: `Estoque Baixo: ${peca.nome}`,
+                            descricao: `O estoque da peça ${peca.nome} (${peca.codigo}) está baixo (${peca.estoque} unidades). Considere adquirir mais unidades.`,
+                            data: new Date().toISOString().split('T')[0],
+                            prioridade: peca.estoque === 0 ? 'Alta' : 'Média'
                         });
+                        
+                        await carregarAlertas();
+                        await atualizarDashboard();
+                    }
                 }
             });
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao verificar peças para alertas:", error);
-        });
+        }
     }
     
     // Verificar alertas para manutenções
-    function verificarAlertasManutencoes() {
-        // Obter a última manutenção preventiva de cada máquina
-        maquinasRef.get().then((snapshot) => {
-            snapshot.forEach(maquinaDoc => {
+    async function verificarAlertasManutencoes() {
+        try {
+            // Obter a última manutenção preventiva de cada máquina
+            const maquinasSnapshot = await getDocs(maquinasCollection);
+            
+            maquinasSnapshot.forEach(async maquinaDoc => {
                 const maquinaId = maquinaDoc.id;
                 const maquina = maquinaDoc.data();
                 
-                manutencoesRef.where('maquinaId', '==', maquinaId)
-                    .where('tipo', '==', 'Preventiva')
-                    .orderBy('data', 'desc')
-                    .limit(1)
-                    .get()
-                    .then((manutencaoSnapshot) => {
-                        if (!manutencaoSnapshot.empty) {
-                            const ultimaManutencao = manutencaoSnapshot.docs[0].data();
-                            const dataUltimaManutencao = new Date(ultimaManutencao.data);
-                            const hoje = new Date();
+                // Consultar a última manutenção preventiva
+                const manutencaoQuery = query(
+                    manutencoesCollection,
+                    where('maquinaId', '==', maquinaId),
+                    where('tipo', '==', 'Preventiva'),
+                    orderBy('data', 'desc'),
+                    limit(1)
+                );
+                
+                const manutencaoSnapshot = await getDocs(manutencaoQuery);
+                
+                if (!manutencaoSnapshot.empty) {
+                    const ultimaManutencao = manutencaoSnapshot.docs[0].data();
+                    const dataUltimaManutencao = new Date(ultimaManutencao.data);
+                    const hoje = new Date();
+                    
+                    // Calcular dias desde a última manutenção
+                    const diasDesdeUltimaManutencao = Math.floor((hoje - dataUltimaManutencao) / (1000 * 60 * 60 * 24));
+                    
+                    // Se passaram mais de 90 dias desde a última manutenção preventiva
+                    if (diasDesdeUltimaManutencao >= 90) {
+                        // Verificar se já existe um alerta para esta máquina
+                        const alertaQuery = query(
+                            alertasCollection,
+                            where('tipo', '==', 'manutencao'),
+                            where('referenciaId', '==', maquinaId)
+                        );
+                        
+                        const alertaSnapshot = await getDocs(alertaQuery);
+                        
+                        if (alertaSnapshot.empty) {
+                            // Criar alerta
+                            const prioridade = diasDesdeUltimaManutencao >= 120 ? 'Alta' : 'Média';
                             
-                            // Calcular dias desde a última manutenção
-                            const diasDesdeUltimaManutencao = Math.floor((hoje - dataUltimaManutencao) / (1000 * 60 * 60 * 24));
+                            await addDoc(alertasCollection, {
+                                tipo: 'manutencao',
+                                referenciaId: maquinaId,
+                                titulo: `Manutenção Preventiva: ${maquina.nome}`,
+                                descricao: `A máquina ${maquina.nome} está há ${diasDesdeUltimaManutencao} dias sem manutenção preventiva. Recomenda-se agendar uma manutenção.`,
+                                data: new Date().toISOString().split('T')[0],
+                                prioridade: prioridade
+                            });
                             
-                            // Se passaram mais de 90 dias desde a última manutenção preventiva
-                            if (diasDesdeUltimaManutencao >= 90) {
-                                // Verificar se já existe um alerta para esta máquina
-                                alertasRef.where('tipo', '==', 'manutencao')
-                                    .where('referenciaId', '==', maquinaId)
-                                    .get()
-                                    .then((alertaSnapshot) => {
-                                        if (alertaSnapshot.empty) {
-                                            // Criar alerta
-                                            const prioridade = diasDesdeUltimaManutencao >= 120 ? 'Alta' : 'Média';
-                                            
-                                            alertasRef.add({
-                                                tipo: 'manutencao',
-                                                referenciaId: maquinaId,
-                                                titulo: `Manutenção Preventiva: ${maquina.nome}`,
-                                                descricao: `A máquina ${maquina.nome} está há ${diasDesdeUltimaManutencao} dias sem manutenção preventiva. Recomenda-se agendar uma manutenção.`,
-                                                data: new Date().toISOString().split('T')[0],
-                                                prioridade: prioridade
-                                            }).then(() => {
-                                                carregarAlertas();
-                                                atualizarDashboard();
-                                            }).catch(error => {
-                                                console.error("Erro ao criar alerta de manutenção:", error);
-                                            });
-                                        }
-                                    }).catch(error => {
-                                        console.error("Erro ao verificar alertas de manutenção existentes:", error);
-                                    });
-                            }
-                        } else {
-                            // Nunca teve manutenção preventiva
-                            alertasRef.where('tipo', '==', 'manutencao')
-                                .where('referenciaId', '==', maquinaId)
-                                .get()
-                                .then((alertaSnapshot) => {
-                                    if (alertaSnapshot.empty) {
-                                        // Criar alerta
-                                        alertasRef.add({
-                                            tipo: 'manutencao',
-                                            referenciaId: maquinaId,
-                                            titulo: `Manutenção Preventiva: ${maquina.nome}`,
-                                            descricao: `A máquina ${maquina.nome} nunca passou por manutenção preventiva. Recomenda-se agendar uma manutenção.`,
-                                            data: new Date().toISOString().split('T')[0],
-                                            prioridade: 'Alta'
-                                        }).then(() => {
-                                            carregarAlertas();
-                                            atualizarDashboard();
-                                        }).catch(error => {
-                                            console.error("Erro ao criar alerta de primeira manutenção:", error);
-                                        });
-                                    }
-                                }).catch(error => {
-                                    console.error("Erro ao verificar alertas de primeira manutenção:", error);
-                                });
+                            await carregarAlertas();
+                            await atualizarDashboard();
                         }
-                    }).catch(error => {
-                        console.error("Erro ao verificar última manutenção:", error);
-                    });
+                    }
+                } else {
+                    // Nunca teve manutenção preventiva
+                    const alertaQuery = query(
+                        alertasCollection,
+                        where('tipo', '==', 'manutencao'),
+                        where('referenciaId', '==', maquinaId)
+                    );
+                    
+                    const alertaSnapshot = await getDocs(alertaQuery);
+                    
+                    if (alertaSnapshot.empty) {
+                        // Criar alerta
+                        await addDoc(alertasCollection, {
+                            tipo: 'manutencao',
+                            referenciaId: maquinaId,
+                            titulo: `Manutenção Preventiva: ${maquina.nome}`,
+                            descricao: `A máquina ${maquina.nome} nunca passou por manutenção preventiva. Recomenda-se agendar uma manutenção.`,
+                            data: new Date().toISOString().split('T')[0],
+                            prioridade: 'Alta'
+                        });
+                        
+                        await carregarAlertas();
+                        await atualizarDashboard();
+                    }
+                }
             });
-        }).catch(error => {
+        } catch (error) {
             console.error("Erro ao verificar máquinas para alertas de manutenção:", error);
-        });
+        }
     }
     
     // Função para calcular horas de uso de uma máquina desde uma data
-    function calcularHorasUso(maquinaId, dataInicio) {
-        // Implementação simplificada - em um sistema real, isso seria calculado com base nas operações registradas
-        return 100; // Valor fictício para demonstração
+    async function calcularHorasUso(maquinaId, dataInicio) {
+        try {
+            // Implementação simplificada - em um sistema real, isso seria calculado com base nas operações registradas
+            const operacoesQuery = query(
+                operacoesCollection,
+                where('maquinaId', '==', maquinaId),
+                where('data', '>=', dataInicio.toISOString().split('T')[0])
+            );
+            
+            const operacoesSnapshot = await getDocs(operacoesQuery);
+            
+            let horasTotal = 0;
+            operacoesSnapshot.forEach(doc => {
+                const operacao = doc.data();
+                horasTotal += parseFloat(operacao.duracao) || 0;
+            });
+            
+            return horasTotal || 100; // Valor mínimo para demonstração
+        } catch (error) {
+            console.error("Erro ao calcular horas de uso:", error);
+            return 100; // Valor padrão para demonstração
+        }
     }
     
     // Atualizar contadores do dashboard
-    function atualizarDashboard() {
+    async function atualizarDashboard() {
         console.log("Atualizando dashboard...");
         
-        // Contar máquinas
-        maquinasRef.get().then((snapshot) => {
-            if (maquinasCount) maquinasCount.textContent = snapshot.size;
-        }).catch(error => {
-            console.error("Erro ao contar máquinas:", error);
-            if (maquinasCount) maquinasCount.textContent = "Erro";
-        });
-        
-        // Contar operações
-        operacoesRef.get().then((snapshot) => {
-            if (operacoesCount) operacoesCount.textContent = snapshot.size;
-        }).catch(error => {
-            console.error("Erro ao contar operações:", error);
-            if (operacoesCount) operacoesCount.textContent = "Erro";
-        });
-        
-        // Contar peças
-        pecasRef.get().then((snapshot) => {
-            if (pecasCount) pecasCount.textContent = snapshot.size;
-        }).catch(error => {
-            console.error("Erro ao contar peças:", error);
-            if (pecasCount) pecasCount.textContent = "Erro";
-        });
-        
-        // Contar manutenções
-        manutencoesRef.get().then((snapshot) => {
-            if (manutencoesCount) manutencoesCount.textContent = snapshot.size;
-        }).catch(error => {
-            console.error("Erro ao contar manutenções:", error);
-            if (manutencoesCount) manutencoesCount.textContent = "Erro";
-        });
-        
-        // Contar alertas
-        alertasRef.get().then((snapshot) => {
-            if (alertasCount) alertasCount.textContent = snapshot.size;
-        }).catch(error => {
-            console.error("Erro ao contar alertas:", error);
-            if (alertasCount) alertasCount.textContent = "Erro";
-        });
+        try {
+            // Contar máquinas
+            const maquinasSnapshot = await getDocs(maquinasCollection);
+            if (maquinasCount) maquinasCount.textContent = maquinasSnapshot.size;
+            
+            // Contar operações
+            const operacoesSnapshot = await getDocs(operacoesCollection);
+            if (operacoesCount) operacoesCount.textContent = operacoesSnapshot.size;
+            
+            // Contar peças
+            const pecasSnapshot = await getDocs(pecasCollection);
+            if (pecasCount) pecasCount.textContent = pecasSnapshot.size;
+            
+            // Contar manutenções
+            const manutencoesSnapshot = await getDocs(manutencoesCollection);
+            if (manutencoesCount) manutencoesCount.textContent = manutencoesSnapshot.size;
+            
+            // Contar alertas
+            const alertasSnapshot = await getDocs(alertasCollection);
+            if (alertasCount) alertasCount.textContent = alertasSnapshot.size;
+        } catch (error) {
+            console.error("Erro ao atualizar dashboard:", error);
+        }
     }
     
     // Função para formatar data
@@ -1071,12 +1098,24 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pecaUltimaTroca) pecaUltimaTroca.value = hoje;
     if (manutencaoData) manutencaoData.value = hoje;
     
-    // CORREÇÃO: Chamar carregarDados explicitamente na inicialização
-    // Isso garante que os dados sejam carregados mesmo se a verificação de login já tiver ocorrido
-    setTimeout(function() {
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            console.log("Chamando carregarDados após timeout");
-            window.carregarDados();
-        }
-    }, 500);
+    // Importar funções adicionais necessárias
+    import('config.js').then(module => {
+        // Adicionar getDoc e where ao escopo global para uso nas funções de janela
+        window.getDoc = module.getDoc;
+        window.where = module.where;
+        window.query = module.query;
+        window.limit = module.limit;
+        window.orderBy = module.orderBy;
+        
+        // Chamar carregarDados explicitamente na inicialização
+        // Isso garante que os dados sejam carregados mesmo se a verificação de login já tiver ocorrido
+        setTimeout(function() {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                console.log("Chamando carregarDados após timeout");
+                window.carregarDados();
+            }
+        }, 500);
+    }).catch(error => {
+        console.error("Erro ao importar módulos adicionais:", error);
+    });
 });

@@ -1,5 +1,5 @@
-// Autenticação local simplificada
-
+// Autenticação local simplificada com suporte a módulos ES6
+import { getDocs } from 'config.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     // Elementos do DOM - Login
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
             
-            // CORREÇÃO: Garantir que carregarDados seja chamada após login
+            // Garantir que carregarDados seja chamada após login
             if (typeof window.carregarDados === 'function') {
                 console.log("Chamando carregarDados após verificação de login");
                 window.carregarDados();
@@ -59,12 +59,18 @@ document.addEventListener('DOMContentLoaded', function() {
             loginContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
             
-            // CORREÇÃO: Chamar carregarDados explicitamente após login bem-sucedido
+            // Chamar carregarDados explicitamente após login bem-sucedido
             if (typeof window.carregarDados === 'function') {
                 console.log("Chamando carregarDados após login bem-sucedido");
                 window.carregarDados();
             } else {
                 console.error('Função carregarDados não encontrada. Verifique se app.js está carregado corretamente.');
+                // Tentar carregar dados após um pequeno atraso
+                setTimeout(() => {
+                    if (typeof window.carregarDados === 'function') {
+                        window.carregarDados();
+                    }
+                }, 500);
             }
         } else {
             // Erro no login
