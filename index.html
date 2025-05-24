@@ -7,7 +7,7 @@
     <!-- Font Awesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Estilos Gerais */
+        /* Estilos Gerais (mantidos como antes) */
         * {
             margin: 0;
             padding: 0;
@@ -659,33 +659,35 @@
                 
                 <div class="form-container">
                     <h3><i class="fas fa-plus-circle"></i> Cadastrar/Editar Máquina</h3>
-                    <input type="hidden" id="maquina-edit-id">
-                    <div class="form-group">
-                        <label for="maquina-nome">Nome:</label>
-                        <input type="text" id="maquina-nome" placeholder="Nome da máquina">
-                    </div>
-                    <div class="form-group">
-                        <label for="maquina-modelo">Modelo:</label>
-                        <input type="text" id="maquina-modelo" placeholder="Modelo da máquina">
-                    </div>
-                    <div class="form-group">
-                        <label for="maquina-fabricante">Fabricante:</label>
-                        <input type="text" id="maquina-fabricante" placeholder="Fabricante da máquina">
-                    </div>
-                    <div class="form-group">
-                        <label for="maquina-data-aquisicao">Data de Aquisição:</label>
-                        <input type="date" id="maquina-data-aquisicao">
-                    </div>
-                    <div class="form-group">
-                        <label for="maquina-status">Status:</label>
-                        <select id="maquina-status">
-                            <option value="Ativa">Ativa</option>
-                            <option value="Em Manutenção">Em Manutenção</option>
-                            <option value="Desativada">Desativada</option>
-                        </select>
-                    </div>
-                    <button id="maquina-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button>
-                    <button id="maquina-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button>
+                    <form id="maquina-form-element"> <!-- Adicionado ID ao form -->
+                        <input type="hidden" id="maquina-edit-id">
+                        <div class="form-group">
+                            <label for="maquina-nome">Nome:</label>
+                            <input type="text" id="maquina-nome" placeholder="Nome da máquina">
+                        </div>
+                        <div class="form-group">
+                            <label for="maquina-modelo">Modelo:</label>
+                            <input type="text" id="maquina-modelo" placeholder="Modelo da máquina">
+                        </div>
+                        <div class="form-group">
+                            <label for="maquina-fabricante">Fabricante:</label>
+                            <input type="text" id="maquina-fabricante" placeholder="Fabricante da máquina">
+                        </div>
+                        <div class="form-group">
+                            <label for="maquina-data-aquisicao">Data de Aquisição:</label>
+                            <input type="date" id="maquina-data-aquisicao">
+                        </div>
+                        <div class="form-group">
+                            <label for="maquina-status">Status:</label>
+                            <select id="maquina-status">
+                                <option value="Ativa">Ativa</option>
+                                <option value="Em Manutenção">Em Manutenção</option>
+                                <option value="Desativada">Desativada</option>
+                            </select>
+                        </div>
+                        <button type="button" id="maquina-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button> <!-- Mudado para type="button" -->
+                        <button type="button" id="maquina-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button> <!-- Mudado para type="button" -->
+                    </form>
                 </div>
 
                 <div class="list-container">
@@ -702,35 +704,37 @@
                 
                 <div class="form-container">
                     <h3><i class="fas fa-plus-circle"></i> Registrar/Editar Operação</h3>
-                    <input type="hidden" id="operacao-edit-id">
-                    <div class="form-group">
-                        <label for="operacao-maquina">Máquina:</label>
-                        <select id="operacao-maquina">
-                            <option value="">Selecione uma máquina</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="operacao-tipo">Tipo de Operação:</label>
-                        <input type="text" id="operacao-tipo" placeholder="Ex: Corte, Polimento">
-                    </div>
-                    <div class="form-group">
-                        <label for="operacao-data">Data:</label>
-                        <input type="date" id="operacao-data">
-                    </div>
-                    <div class="form-group">
-                        <label for="operacao-duracao">Duração (horas):</label>
-                        <input type="number" id="operacao-duracao" min="0" step="0.1" placeholder="Duração em horas">
-                    </div>
-                    <div class="form-group">
-                        <label for="operacao-operador">Operador:</label>
-                        <input type="text" id="operacao-operador" placeholder="Nome do operador">
-                    </div>
-                    <div class="form-group">
-                        <label for="operacao-observacoes">Observações:</label>
-                        <textarea id="operacao-observacoes" placeholder="Observações sobre a operação"></textarea>
-                    </div>
-                    <button id="operacao-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button>
-                    <button id="operacao-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button>
+                    <form id="operacao-form-element"> <!-- Adicionado ID ao form -->
+                        <input type="hidden" id="operacao-edit-id">
+                        <div class="form-group">
+                            <label for="operacao-maquina">Máquina:</label>
+                            <select id="operacao-maquina">
+                                <option value="">Selecione uma máquina</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="operacao-tipo">Tipo de Operação:</label>
+                            <input type="text" id="operacao-tipo" placeholder="Ex: Corte, Polimento">
+                        </div>
+                        <div class="form-group">
+                            <label for="operacao-data">Data:</label>
+                            <input type="date" id="operacao-data">
+                        </div>
+                        <div class="form-group">
+                            <label for="operacao-duracao">Duração (horas):</label>
+                            <input type="number" id="operacao-duracao" min="0" step="0.1" placeholder="Duração em horas">
+                        </div>
+                        <div class="form-group">
+                            <label for="operacao-operador">Operador:</label>
+                            <input type="text" id="operacao-operador" placeholder="Nome do operador">
+                        </div>
+                        <div class="form-group">
+                            <label for="operacao-observacoes">Observações:</label>
+                            <textarea id="operacao-observacoes" placeholder="Observações sobre a operação"></textarea>
+                        </div>
+                        <button type="button" id="operacao-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button> <!-- Mudado para type="button" -->
+                        <button type="button" id="operacao-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button> <!-- Mudado para type="button" -->
+                    </form>
                 </div>
 
                 <div class="list-container">
@@ -747,35 +751,37 @@
                 
                 <div class="form-container">
                     <h3><i class="fas fa-plus-circle"></i> Cadastrar/Editar Peça</h3>
-                    <input type="hidden" id="peca-edit-id">
-                    <div class="form-group">
-                        <label for="peca-nome">Nome:</label>
-                        <input type="text" id="peca-nome" placeholder="Nome da peça">
-                    </div>
-                    <div class="form-group">
-                        <label for="peca-codigo">Código:</label>
-                        <input type="text" id="peca-codigo" placeholder="Código da peça">
-                    </div>
-                    <div class="form-group">
-                        <label for="peca-maquina">Máquina Compatível:</label>
-                        <select id="peca-maquina">
-                            <option value="">Selecione uma máquina</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="peca-vida-util">Vida Útil (horas):</label>
-                        <input type="number" id="peca-vida-util" min="0" placeholder="Vida útil estimada em horas">
-                    </div>
-                    <div class="form-group">
-                        <label for="peca-ultima-troca">Data da Última Troca:</label>
-                        <input type="date" id="peca-ultima-troca">
-                    </div>
-                    <div class="form-group">
-                        <label for="peca-estoque">Quantidade em Estoque:</label>
-                        <input type="number" id="peca-estoque" min="0" placeholder="Quantidade em estoque">
-                    </div>
-                    <button id="peca-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button>
-                    <button id="peca-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button>
+                    <form id="peca-form-element"> <!-- Adicionado ID ao form -->
+                        <input type="hidden" id="peca-edit-id">
+                        <div class="form-group">
+                            <label for="peca-nome">Nome:</label>
+                            <input type="text" id="peca-nome" placeholder="Nome da peça">
+                        </div>
+                        <div class="form-group">
+                            <label for="peca-codigo">Código:</label>
+                            <input type="text" id="peca-codigo" placeholder="Código da peça">
+                        </div>
+                        <div class="form-group">
+                            <label for="peca-maquina">Máquina Compatível:</label>
+                            <select id="peca-maquina">
+                                <option value="">Selecione uma máquina</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="peca-vida-util">Vida Útil (horas):</label>
+                            <input type="number" id="peca-vida-util" min="0" placeholder="Vida útil estimada em horas">
+                        </div>
+                        <div class="form-group">
+                            <label for="peca-ultima-troca">Data da Última Troca:</label>
+                            <input type="date" id="peca-ultima-troca">
+                        </div>
+                        <div class="form-group">
+                            <label for="peca-estoque">Quantidade em Estoque:</label>
+                            <input type="number" id="peca-estoque" min="0" placeholder="Quantidade em estoque">
+                        </div>
+                        <button type="button" id="peca-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button> <!-- Mudado para type="button" -->
+                        <button type="button" id="peca-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button> <!-- Mudado para type="button" -->
+                    </form>
                 </div>
 
                 <div class="list-container">
@@ -792,38 +798,40 @@
                 
                 <div class="form-container">
                     <h3><i class="fas fa-plus-circle"></i> Registrar/Editar Manutenção</h3>
-                    <input type="hidden" id="manutencao-edit-id">
-                    <div class="form-group">
-                        <label for="manutencao-maquina">Máquina:</label>
-                        <select id="manutencao-maquina">
-                            <option value="">Selecione uma máquina</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="manutencao-tipo">Tipo de Manutenção:</label>
-                        <select id="manutencao-tipo">
-                            <option value="Preventiva">Preventiva</option>
-                            <option value="Corretiva">Corretiva</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="manutencao-data">Data:</label>
-                        <input type="date" id="manutencao-data">
-                    </div>
-                    <div class="form-group">
-                        <label for="manutencao-responsavel">Responsável:</label>
-                        <input type="text" id="manutencao-responsavel" placeholder="Nome do responsável">
-                    </div>
-                    <div class="form-group">
-                        <label for="manutencao-descricao">Descrição:</label>
-                        <textarea id="manutencao-descricao" placeholder="Descrição detalhada da manutenção"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="manutencao-custo">Custo (R$):</label>
-                        <input type="number" id="manutencao-custo" min="0" step="0.01" placeholder="Custo em reais">
-                    </div>
-                    <button id="manutencao-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button>
-                    <button id="manutencao-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button>
+                    <form id="manutencao-form-element"> <!-- Adicionado ID ao form -->
+                        <input type="hidden" id="manutencao-edit-id">
+                        <div class="form-group">
+                            <label for="manutencao-maquina">Máquina:</label>
+                            <select id="manutencao-maquina">
+                                <option value="">Selecione uma máquina</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="manutencao-tipo">Tipo de Manutenção:</label>
+                            <select id="manutencao-tipo">
+                                <option value="Preventiva">Preventiva</option>
+                                <option value="Corretiva">Corretiva</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="manutencao-data">Data:</label>
+                            <input type="date" id="manutencao-data">
+                        </div>
+                        <div class="form-group">
+                            <label for="manutencao-responsavel">Responsável:</label>
+                            <input type="text" id="manutencao-responsavel" placeholder="Nome do responsável">
+                        </div>
+                        <div class="form-group">
+                            <label for="manutencao-descricao">Descrição:</label>
+                            <textarea id="manutencao-descricao" placeholder="Descrição detalhada da manutenção"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="manutencao-custo">Custo (R$):</label>
+                            <input type="number" id="manutencao-custo" min="0" step="0.01" placeholder="Custo em reais">
+                        </div>
+                        <button type="button" id="manutencao-salvar" class="btn primary-btn"><i class="fas fa-save"></i> Salvar</button> <!-- Mudado para type="button" -->
+                        <button type="button" id="manutencao-cancelar" class="btn secondary-btn hidden"><i class="fas fa-times"></i> Cancelar Edição</button> <!-- Mudado para type="button" -->
+                    </form>
                 </div>
 
                 <div class="list-container">
@@ -884,13 +892,13 @@
 
         // Configuração do Firebase (Substitua pelas suas credenciais)
         const firebaseConfig = {
-apiKey: "AIzaSyAlFPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
-authDomain: "controle-4b27d.firebaseapp.com",
-projectId: "controle-4b27d",
-storageBucket: "controle-4b27d.firebasestorage.app",
-messagingSenderId: "194889796690",
-appId: "1:194889796690:web:c3162d4193252454fee38b"
-};
+  apiKey: "AIzaSyAlFPchcsdsyJWmOZUqfdbm-EbwkF01Awc",
+  authDomain: "controle-4b27d.firebaseapp.com",
+  projectId: "controle-4b27d",
+  storageBucket: "controle-4b27d.firebasestorage.app",
+  messagingSenderId: "194889796690",
+  appId: "1:194889796690:web:c3162d4193252454fee38b"
+  };
 
         // Inicializar Firebase, Auth e Firestore
         const app = initializeApp(firebaseConfig);
@@ -930,7 +938,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         const alertasCount = document.getElementById('alertas-count');
         const alertasRecentesList = document.getElementById('alertas-recentes-list');
         // Máquinas
-        const maquinaForm = document.querySelector('#maquinas .form-container');
+        const maquinaFormElement = document.getElementById('maquina-form-element'); // Selecionar o form
         const maquinaEditIdInput = document.getElementById('maquina-edit-id');
         const maquinaNome = document.getElementById('maquina-nome');
         const maquinaModelo = document.getElementById('maquina-modelo');
@@ -941,7 +949,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         const maquinaCancelar = document.getElementById('maquina-cancelar');
         const maquinasList = document.getElementById('maquinas-list');
         // Operações
-        const operacaoForm = document.querySelector('#operacoes .form-container');
+        const operacaoFormElement = document.getElementById('operacao-form-element'); // Selecionar o form
         const operacaoEditIdInput = document.getElementById('operacao-edit-id');
         const operacaoMaquina = document.getElementById('operacao-maquina');
         const operacaoTipo = document.getElementById('operacao-tipo');
@@ -953,7 +961,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         const operacaoCancelar = document.getElementById('operacao-cancelar');
         const operacoesList = document.getElementById('operacoes-list');
         // Peças
-        const pecaForm = document.querySelector('#pecas .form-container');
+        const pecaFormElement = document.getElementById('peca-form-element'); // Selecionar o form
         const pecaEditIdInput = document.getElementById('peca-edit-id');
         const pecaNome = document.getElementById('peca-nome');
         const pecaCodigo = document.getElementById('peca-codigo');
@@ -965,7 +973,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         const pecaCancelar = document.getElementById('peca-cancelar');
         const pecasList = document.getElementById('pecas-list');
         // Manutenções
-        const manutencaoForm = document.querySelector('#manutencoes .form-container');
+        const manutencaoFormElement = document.getElementById('manutencao-form-element'); // Selecionar o form
         const manutencaoEditIdInput = document.getElementById('manutencao-edit-id');
         const manutencaoMaquina = document.getElementById('manutencao-maquina');
         const manutencaoTipo = document.getElementById('manutencao-tipo');
@@ -1084,7 +1092,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                 await carregarPecas();
                 await carregarManutencoes();
                 await carregarAlertas();
-                await atualizarDashboard();
+                await atualizarDashboard(); // Chamada para atualizar o dashboard
                 console.log("Todos os dados carregados com sucesso!");
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
@@ -1173,9 +1181,9 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     await addDoc(maquinasCollection, maquinaData);
                     mostrarPopupAlerta('Máquina adicionada com sucesso!', 'low');
                 }
-                limparFormularioMaquina();
-                await carregarMaquinas();
-                await atualizarDashboard();
+                await carregarMaquinas(); // Recarregar a lista APÓS salvar/atualizar
+                limparFormularioMaquina(); // Limpar o formulário DEPOIS de recarregar
+                await atualizarDashboard(); // Atualizar dashboard
             } catch (error) {
                 console.error("Erro ao salvar máquina:", error);
                 mostrarPopupAlerta('Erro ao salvar máquina: ' + error.message, 'high');
@@ -1185,10 +1193,14 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         maquinaCancelar.addEventListener('click', limparFormularioMaquina);
 
         function limparFormularioMaquina() {
-            maquinaForm.reset();
-            maquinaEditIdInput.value = '';
-            maquinaSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
-            maquinaCancelar.classList.add('hidden');
+            if (maquinaFormElement) { // Verificar se o elemento existe
+                maquinaFormElement.reset();
+                maquinaEditIdInput.value = '';
+                maquinaSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
+                maquinaCancelar.classList.add('hidden');
+            } else {
+                console.error("Elemento do formulário de máquina não encontrado para reset.");
+            }
         }
 
         window.editarMaquina = async (id) => {
@@ -1205,7 +1217,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     maquinaStatus.value = maquina.status;
                     maquinaSalvar.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar';
                     maquinaCancelar.classList.remove('hidden');
-                    maquinaForm.scrollIntoView({ behavior: 'smooth' });
+                    maquinaFormElement.scrollIntoView({ behavior: 'smooth' }); // Usar maquinaFormElement
                 }
             } catch (error) {
                 console.error("Erro ao carregar máquina para edição:", error);
@@ -1276,21 +1288,21 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                 return;
             }
 
-            const operacaoData = {
+            const operacaoDataFirestore = { // Renomeado para evitar conflito
                 maquinaId, tipo, data, duracao: parseFloat(duracao), operador, observacoes,
                 dataCadastro: Timestamp.now()
             };
 
             try {
                 if (editId) {
-                    await updateDoc(doc(db, 'operacoes', editId), operacaoData);
+                    await updateDoc(doc(db, 'operacoes', editId), operacaoDataFirestore);
                     mostrarPopupAlerta('Operação atualizada com sucesso!', 'low');
                 } else {
-                    await addDoc(operacoesCollection, operacaoData);
+                    await addDoc(operacoesCollection, operacaoDataFirestore);
                     mostrarPopupAlerta('Operação adicionada com sucesso!', 'low');
                 }
-                limparFormularioOperacao();
                 await carregarOperacoes();
+                limparFormularioOperacao();
                 await atualizarDashboard();
                 await verificarAlertasPecas(); // Recalcular alertas de peças após nova operação
             } catch (error) {
@@ -1302,10 +1314,14 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         operacaoCancelar.addEventListener('click', limparFormularioOperacao);
 
         function limparFormularioOperacao() {
-            operacaoForm.reset();
-            operacaoEditIdInput.value = '';
-            operacaoSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
-            operacaoCancelar.classList.add('hidden');
+            if (operacaoFormElement) {
+                operacaoFormElement.reset();
+                operacaoEditIdInput.value = '';
+                operacaoSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
+                operacaoCancelar.classList.add('hidden');
+            } else {
+                 console.error("Elemento do formulário de operação não encontrado para reset.");
+            }
         }
 
         window.editarOperacao = async (id) => {
@@ -1323,7 +1339,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     operacaoObservacoes.value = operacao.observacoes || '';
                     operacaoSalvar.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar';
                     operacaoCancelar.classList.remove('hidden');
-                    operacaoForm.scrollIntoView({ behavior: 'smooth' });
+                    operacaoFormElement.scrollIntoView({ behavior: 'smooth' });
                 }
             } catch (error) {
                 console.error("Erro ao carregar operação para edição:", error);
@@ -1408,8 +1424,8 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     await addDoc(pecasCollection, pecaData);
                     mostrarPopupAlerta('Peça adicionada com sucesso!', 'low');
                 }
-                limparFormularioPeca();
                 await carregarPecas();
+                limparFormularioPeca();
                 await atualizarDashboard();
             } catch (error) {
                 console.error("Erro ao salvar peça:", error);
@@ -1420,10 +1436,14 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         pecaCancelar.addEventListener('click', limparFormularioPeca);
 
         function limparFormularioPeca() {
-            pecaForm.reset();
-            pecaEditIdInput.value = '';
-            pecaSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
-            pecaCancelar.classList.add('hidden');
+            if (pecaFormElement) {
+                pecaFormElement.reset();
+                pecaEditIdInput.value = '';
+                pecaSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
+                pecaCancelar.classList.add('hidden');
+            } else {
+                console.error("Elemento do formulário de peça não encontrado para reset.");
+            }
         }
 
         window.editarPeca = async (id) => {
@@ -1441,7 +1461,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     pecaEstoque.value = peca.estoque;
                     pecaSalvar.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar';
                     pecaCancelar.classList.remove('hidden');
-                    pecaForm.scrollIntoView({ behavior: 'smooth' });
+                    pecaFormElement.scrollIntoView({ behavior: 'smooth' });
                 }
             } catch (error) {
                 console.error("Erro ao carregar peça para edição:", error);
@@ -1513,21 +1533,21 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                 return;
             }
 
-            const manutencaoData = {
+            const manutencaoDataFirestore = { // Renomeado para evitar conflito
                 maquinaId, tipo, data, responsavel, descricao, custo: parseFloat(custo),
                 dataCadastro: Timestamp.now()
             };
 
             try {
                 if (editId) {
-                    await updateDoc(doc(db, 'manutencoes', editId), manutencaoData);
+                    await updateDoc(doc(db, 'manutencoes', editId), manutencaoDataFirestore);
                     mostrarPopupAlerta('Manutenção atualizada com sucesso!', 'low');
                 } else {
-                    await addDoc(manutencoesCollection, manutencaoData);
+                    await addDoc(manutencoesCollection, manutencaoDataFirestore);
                     mostrarPopupAlerta('Manutenção adicionada com sucesso!', 'low');
                 }
-                limparFormularioManutencao();
                 await carregarManutencoes();
+                limparFormularioManutencao();
                 await atualizarDashboard();
             } catch (error) {
                 console.error("Erro ao salvar manutenção:", error);
@@ -1538,10 +1558,14 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         manutencaoCancelar.addEventListener('click', limparFormularioManutencao);
 
         function limparFormularioManutencao() {
-            manutencaoForm.reset();
-            manutencaoEditIdInput.value = '';
-            manutencaoSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
-            manutencaoCancelar.classList.add('hidden');
+            if (manutencaoFormElement) {
+                manutencaoFormElement.reset();
+                manutencaoEditIdInput.value = '';
+                manutencaoSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar';
+                manutencaoCancelar.classList.add('hidden');
+            } else {
+                console.error("Elemento do formulário de manutenção não encontrado para reset.");
+            }
         }
 
         window.editarManutencao = async (id) => {
@@ -1559,7 +1583,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     manutencaoCusto.value = manutencao.custo;
                     manutencaoSalvar.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar';
                     manutencaoCancelar.classList.remove('hidden');
-                    manutencaoForm.scrollIntoView({ behavior: 'smooth' });
+                    manutencaoFormElement.scrollIntoView({ behavior: 'smooth' });
                 }
             } catch (error) {
                 console.error("Erro ao carregar manutenção para edição:", error);
@@ -1584,7 +1608,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
         async function carregarAlertas() {
             console.log("Carregando alertas...");
             try {
-                const snapshot = await getDocs(query(alertasCollection, orderBy("data", "desc")));
+                const snapshot = await getDocs(query(alertasCollection, orderBy("dataCriacao", "desc"))); // Ordenar por dataCriacao
                 alertasList.innerHTML = ''; // Limpar lista
                 alertasRecentesList.innerHTML = ''; // Limpar lista de recentes
                 let alertasAtivos = 0;
@@ -1602,7 +1626,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                         item.innerHTML = `
                             <h4><i class="fas fa-exclamation-triangle"></i> ${alerta.titulo}</h4>
                             <p><strong>Descrição:</strong> ${alerta.descricao}</p>
-                            <p><strong>Data:</strong> ${formatarData(alerta.data)}</p>
+                            <p><strong>Data:</strong> ${formatarData(alerta.dataCriacao)}</p> <!-- Usar dataCriacao -->
                             <p><strong>Prioridade:</strong> ${alerta.prioridade}</p>
                             <div class="actions">
                                 <button class="delete-btn" onclick="window.resolverAlerta('${doc.id}')"><i class="fas fa-check-circle"></i> Resolver</button>
@@ -1614,6 +1638,9 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                         // Adicionar aos recentes no dashboard
                         if (alertasRecentesCount < 3) {
                             const recenteItem = item.cloneNode(true);
+                            // Remover botão de resolver da lista de recentes
+                            const actionsDiv = recenteItem.querySelector('.actions');
+                            if (actionsDiv) actionsDiv.remove(); 
                             alertasRecentesList.appendChild(recenteItem);
                             alertasRecentesCount++;
                         }
@@ -1638,7 +1665,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     await deleteDoc(doc(db, 'alertas', id));
                     mostrarPopupAlerta('Alerta resolvido com sucesso!', 'low');
                     await carregarAlertas(); // Recarrega a lista de alertas na página e no dashboard
-                    // O contador no dashboard será atualizado pelo carregarAlertas
+                    await atualizarDashboard(); // Atualiza contadores
                 } catch (error) {
                     console.error("Erro ao resolver alerta:", error);
                     mostrarPopupAlerta('Erro ao resolver alerta.', 'high');
@@ -1772,7 +1799,7 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                     titulo,
                     descricao,
                     prioridade, // 'Alta', 'Média', 'Baixa'
-                    data: new Date().toISOString().split('T')[0],
+                    // data: new Date().toISOString().split('T')[0], // Data do evento, não da criação
                     resolvido: false,
                     dataCriacao: Timestamp.now()
                 };
@@ -1833,15 +1860,29 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
             return map;
         }
 
-        function formatarData(dataString) {
-            if (!dataString) return 'N/A';
+        function formatarData(dataInput) {
+            if (!dataInput) return 'N/A';
             try {
-                // Tenta criar data considerando que pode ser string YYYY-MM-DD ou objeto Timestamp
-                const data = dataString.toDate ? dataString.toDate() : new Date(dataString + 'T00:00:00');
+                let data;
+                if (dataInput.toDate) { // Verifica se é um Timestamp do Firebase
+                    data = dataInput.toDate();
+                } else if (typeof dataInput === 'string') {
+                    // Tenta analisar como YYYY-MM-DD
+                    const parts = dataInput.split('-');
+                    if (parts.length === 3) {
+                        data = new Date(parts[0], parts[1] - 1, parts[2]); // Mês é 0-indexado
+                    } else {
+                        data = new Date(dataInput); // Tenta análise genérica
+                    }
+                } else {
+                    data = new Date(dataInput); // Tenta análise genérica
+                }
+                
                 if (isNaN(data.getTime())) return 'Data inválida';
-                return data.toLocaleDateString('pt-BR');
+                return data.toLocaleDateString('pt-BR', { timeZone: 'UTC' }); // Adiciona UTC para consistência
             } catch (e) {
-                return 'Data inválida';
+                console.error("Erro ao formatar data:", dataInput, e);
+                return 'Erro Data';
             }
         }
 
@@ -1870,8 +1911,34 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
 
             // Remover popup após alguns segundos
             setTimeout(() => {
-                popup.remove();
+                if (popup) popup.remove();
             }, 7000); // 7 segundos
+        }
+
+        // --- Dashboard --- 
+        async function atualizarDashboard() {
+            console.log("Atualizando dashboard...");
+            try {
+                const [maquinasSnap, operacoesSnap, pecasSnap, manutencoesSnap, alertasSnap] = await Promise.all([
+                    getDocs(maquinasCollection),
+                    getDocs(operacoesCollection),
+                    getDocs(pecasCollection),
+                    getDocs(manutencoesCollection),
+                    getDocs(alertasCollection)
+                ]);
+
+                if (maquinasCount) maquinasCount.textContent = maquinasSnap.size;
+                if (operacoesCount) operacoesCount.textContent = operacoesSnap.size;
+                if (pecasCount) pecasCount.textContent = pecasSnap.size;
+                if (manutencoesCount) manutencoesCount.textContent = manutencoesSnap.size;
+                if (alertasCount) alertasCount.textContent = alertasSnap.size;
+
+                // Atualizar alertas recentes (já feito em carregarAlertas, mas pode ser chamado aqui também se necessário)
+                // await carregarAlertas(); // Ou apenas a parte de recentes
+
+            } catch (error) {
+                console.error("Erro ao atualizar dashboard:", error);
+            }
         }
 
         // --- Inicialização --- 
@@ -1883,6 +1950,17 @@ appId: "1:194889796690:web:c3162d4193252454fee38b"
                 }
             });
         }
+
+        // Adicionar funções ao escopo global para onclick funcionar
+        window.editarMaquina = editarMaquina;
+        window.excluirMaquina = excluirMaquina;
+        window.editarOperacao = editarOperacao;
+        window.excluirOperacao = excluirOperacao;
+        window.editarPeca = editarPeca;
+        window.excluirPeca = excluirPeca;
+        window.editarManutencao = editarManutencao;
+        window.excluirManutencao = excluirManutencao;
+        window.resolverAlerta = resolverAlerta;
 
         definirDataAtualPadrao();
         // O carregamento inicial dos dados é feito pelo onAuthStateChanged
